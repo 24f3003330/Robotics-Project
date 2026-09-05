@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Emotion Music + xArm Robot Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+      transition: background-color 0.6s ease;
+    }
+    header {
+      background: #101828;
+      color: white;
+      padding: 16px 24px;
+      text-align: center;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+    }
+    .video-box {
+      text-align: center;
+    }
+    #videoFeed {
+      width: 100%;
+      max-width: 720px;
+      border-radius: 10px;
+      border: 2px solid #d0d5dd;
+      background: #000;
+    }
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      background: #2563eb;
+      color: white;
+    }
+    button.secondary { background: #475467; }
+    button.danger { background: #dc2626; }
+    button.success { background: #16a34a; }
+    button.warning { background: #f97316; }
+    select, input {
+      padding: 9px;
+      margin: 5px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+    }
+    .status {
+      font-size: 18px;
+      font-weight: 700;
+      color: #101828;
+      margin-top: 8px;
+    }
+    .small {
+      color: #475467;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-weight: 700;
+      margin: 4px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AI Emotion Music + xArm Robot Bottle Pick Demo</h1>
+    <div class="small">Python 3.12 friendly: OpenCV + Flask + BLE Robot Control</div>
+  </header>
+
+  <div class="container">
+    <div class="grid">
+      <div class="card video-box">
+        <h2>Live Camera</h2>
+        <img id="videoFeed" src="/video_feed" alt="Live camera feed" />
+        <div class="status" id="emotionStatus">Emotion: Detecting...</div>
+        <div>
+          <span class="pill" id="robotConnected">Robot: Unknown</span>
+          <span class="pill" id="robotBusy">Busy: Unknown</span>
+          <span class="pill" id="poseKey">Pose: -</span>
+        </div>
+        <audio id="musicPlayer" controls></audio>
+      </div>
+
+      <div>
+        <div class="card">
+          <h2>Detection Control</h2>
+          <button onclick="resetDetection()">Reset Detection</button>
+          <button class="secondary" onclick="stopDetection()">Pause Detection</button>
+          <button class="success" onclick="resumeDetection()">Resume Detection</button>
+          <p class="small">
+            In no-TensorFlow mode, automatic camera detection mainly gives <b>Happy</b> and <b>Neutral</b>.
+            Use manual emotion buttons below for reliable demo of Angry and Sad robot actions.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>Manual Emotion Trigger</h2>
+          <button onclick="setEmotion('happy')">Happy → 30° Right Bottle</button>
+          <button class="danger" onclick="setEmotion('angry')">Angry → 60° Right Bottle</button>
+          <button class="secondary" onclick="setEmotion('neutral')">Neutral → 30° Left Bottle</button>
+          <button class="warning" onclick="setEmotion('sad')">Sad → 60° Left Bottle</button>
+        </div>
+
+        <div class="card">
+          <h2>Voice Emotion Trigger</h2>
+          <button id="btnStartVoice" class="success" onclick="startVoice()">Start Listening</button>
+          <button id="btnStopVoice" class="danger" style="display:none" onclick="stopVoice()">Stop Listening</button>
+          <div class="status" id="voiceStatus" style="font-size: 14px; color: #475467;">Click 'Start Listening' and speak.</div>
+        </div>
+
+        <div class="card">
+          <h2>Robot BLE Control</h2>
+          <div class="row">
+            <button onclick="scanRobot()">Scan Robot</button>
+            <select id="robotDevice" style="min-width:300px;"></select>
+            <label>Write Index</label>
+            <input id="writeIndex" value="0" style="width:50px;" />
+          </div>
+          <div class="row">
+            <button class="success" onclick="connectRobot()">Connect</button>
+            <button class="secondary" onclick="disconnectRobot()">Disconnect</button>
+            <button onclick="robotHome()">Home</button>
+            <button class="danger" onclick="robotStop()">STOP</button>
+          </div>
+          <div class="row">
+            <button onclick="runRobot('happy')">Run Happy</button>
+            <button onclick="runRobot('angry')">Run Angry</button>
+            <button onclick="runRobot('neutral')">Run Neutral</button>
+            <button onclick="runRobot('sad')">Run Sad</button>
+          </div>
+          <pre id="robotOutput" class="small"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+const musicPlayer = document.getElementById('musicPlayer');
+let lastSong = '';
+
+function showRobotOutput(data) {
+  document.getElementById('robotOutput').textContent = JSON.stringify(data, null, 2);
+}
+
+async function pollStatus() {
+  try {
+    const res = await fetch('/status');
+    const data = await res.json();
+
+    document.getElementById('robotConnected').textContent = 'Robot: ' + (data.robot_connected ? 'Connected' : 'Not connected');
+    document.getElementById('robotBusy').textContent = 'Busy: ' + (data.robot_busy ? 'Yes' : 'No');
+
+    if (data.locked) {
+      document.getElementById('emotionStatus').textContent = 'Emotion: ' + data.emotion;
+      document.getElementById('poseKey').textContent = 'Pose: ' + (data.robot_pose_key || '-');
+
+      if (data.background) {
+        document.body.style.backgroundColor = data.background;
+      }
+
+      if (data.song && data.song !== lastSong) {
+        lastSong = data.song;
+        musicPlayer.src = data.song;
+        musicPlayer.play().catch(() => {});
+      }
+    } else {
+      document.getElementById('emotionStatus').textContent = 'Emotion: Detecting...';
+      document.getElementById('poseKey').textContent = 'Pose: -';
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+setInterval(pollStatus, 1000);
+
+async function resetDetection() {
+  const res = await fetch('/reset');
+  showRobotOutput(await res.json());
+  lastSong = '';
+}
+async function stopDetection() {
+  const res = await fetch('/stop_detect');
+  showRobotOutput(await res.json());
+}
+async function resumeDetection() {
+  const res = await fetch('/resume_detect');
+  showRobotOutput(await res.json());
+}
+async function setEmotion(emotion) {
+  const res = await fetch(`/set_emotion/${emotion}`);
+  const data = await res.json();
+  showRobotOutput(data);
+  pollStatus();
+}
+async function scanRobot() {
+  const res = await fetch('/robot/scan');
+  const data = await res.json();
+  showRobotOutput(data);
+  const select = document.getElementById('robotDevice');
+  select.innerHTML = '';
+  if (data.ok && data.devices) {
+    data.devices.forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.address;
+      opt.textContent = `${d.name} | ${d.address} | RSSI:${d.rssi}`;
+      select.appendChild(opt);
+    });
+  }
+}
+async function connectRobot() {
+  const address = document.getElementById('robotDevice').value;
+  const writeIndex = parseInt(document.getElementById('writeIndex').value || '0');
+  const res = await fetch('/robot/connect', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({address: address, write_index: writeIndex})
+  });
+  showRobotOutput(await res.json());
+}
+async function disconnectRobot() {
+  const res = await fetch('/robot/disconnect');
+  showRobotOutput(await res.json());
+}
+async function robotHome() {
+  const res = await fetch('/robot/home');
+  showRobotOutput(await res.json());
+}
+async function robotStop() {
+  const res = await fetch('/robot/stop');
+  showRobotOutput(await res.json());
+}
+async function runRobot(emotion) {
+  const res = await fetch(`/robot/run/${emotion}`);
+  showRobotOutput(await res.json());
+}
+
+// --- Voice Recognition Logic ---
+let recognition = null;
+if ('webkitSpeechRecognition' in window) {
+  recognition = new webkitSpeechRecognition();
+  recognition.continuous = false;
+  recognition.interimResults = false;
+  recognition.lang = 'en-US';
+
+  recognition.onstart = function() {
+    document.getElementById('btnStartVoice').style.display = 'none';
+    document.getElementById('btnStopVoice').style.display = 'inline-block';
+    document.getElementById('voiceStatus').textContent = 'Listening... Speak now.';
+  };
+
+  recognition.onresult = function(event) {
+    const transcript = event.results[0][0].transcript;
+    document.getElementById('voiceStatus').textContent = `Heard: "${transcript}"`;
+    sendVoiceText(transcript);
+  };
+
+  recognition.onerror = function(event) {
+    document.getElementById('voiceStatus').textContent = `Error: ${event.error}`;
+    resetVoiceUI();
+  };
+
+  recognition.onend = function() {
+    resetVoiceUI();
+    if (document.getElementById('voiceStatus').textContent === 'Listening... Speak now.') {
+        document.getElementById('voiceStatus').textContent = 'Listening ended without result.';
+    }
+  };
+} else {
+  console.log("Web Speech API is not supported in this browser.");
+}
+
+function startVoice() {
+  if (recognition) {
+    document.getElementById('voiceStatus').textContent = 'Requesting mic access...';
+    recognition.start();
+  } else {
+    alert("Voice recognition not supported by your browser. Try Chrome.");
+  }
+}
+
+function stopVoice() {
+  if (recognition) {
+    recognition.stop();
+  }
+}
+
+function resetVoiceUI() {
+  document.getElementById('btnStartVoice').style.display = 'inline-block';
+  document.getElementById('btnStopVoice').style.display = 'none';
+}
+
+async function sendVoiceText(text) {
+  const res = await fetch('/process_voice', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({text: text})
+  });
+  const data = await res.json();
+  showRobotOutput(data);
+  pollStatus();
+}
+</script>
+</body>
+</html>
