@@ -1,0 +1,21 @@
+# Extra packages for BUILDING the multi-dataset ensemble (python -m ser ...).
+#
+# The app itself does NOT need these: requirements_no_tf_robot.txt already
+# covers running the ensemble, because ser/runtime.py uses only torch,
+# transformers and numpy - all of which the app already depends on.
+#
+#   pip install -r requirements_ser_training.txt
+
+-r requirements_no_tf_robot.txt
+
+soundfile>=0.12     # fast decoding of the corpora's .wav/.flac files.
+                    # Optional: ser/audio.py falls back to the imageio-ffmpeg
+                    # binary that requirements_no_tf_robot.txt already pulls in,
+                    # so training works without it, just slower.
+
+# Deliberately NOT required:
+#   scikit-learn - the stacking meta-classifier, the calibrators and every
+#                  metric are implemented on torch/numpy in ser/, so training
+#                  adds no dependency the runtime does not already have.
+#   datasets     - the corpora are read from disk by ser/datasets/*.py, which
+#                  parses each release's own metadata format directly.

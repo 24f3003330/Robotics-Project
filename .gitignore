@@ -1,0 +1,11 @@
+venv/
+.venv/
+uploads/
+# Trained member models and ensemble manifests are build artefacts (hundreds of
+# MB), but keep the note that explains how to produce them.
+models/*
+!models/ensemble/
+models/ensemble/*
+!models/ensemble/README.md
+runs/
+__pycache__/

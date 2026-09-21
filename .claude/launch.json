@@ -1,0 +1,11 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "robotics-app",
+      "runtimeExecutable": "/Users/nivedita/Desktop/Robotics-Project-main/.venv/bin/python",
+      "runtimeArgs": ["app.py"],
+      "port": 5001
+    }
+  ]
+}
