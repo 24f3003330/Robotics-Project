@@ -1,0 +1,15 @@
+RandomForest - test subjects S4, S6, S10
+209 windows of subjects unseen in training
+
+              precision    recall  f1-score   support
+
+    Baseline      0.757     0.965     0.848       113
+      Stress      0.962     0.810     0.879        63
+   Amusement      0.750     0.273     0.400        33
+
+    accuracy                          0.809       209
+   macro avg      0.823     0.682     0.709       209
+weighted avg      0.818     0.809     0.787       209
+
+balanced accuracy 0.682   macro F1 0.709
+majority-class baseline (always 'baseline'): accuracy 0.541, balanced accuracy 0.333, macro F1 0.234

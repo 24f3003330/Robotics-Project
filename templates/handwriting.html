@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+{% block title %}Handwriting{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div>
+      <h1>✍️ Handwriting Analysis</h1>
+      <p class="small">Write with a mouse, trackpad, touchscreen or stylus. This page never uses the camera or the microphone.</p>
+    </div>
+    <div class="page-links">
+      <a class="btn btn-ghost" href="{{ url_for('landing') }}">← Back to Home</a>
+      <a class="btn btn-ghost" href="{{ url_for('camera') }}">🎥 Camera</a>
+      <a class="btn btn-ghost" href="{{ url_for('voice') }}">🎙️ Voice</a>
+    </div>
+  </div>
+
+  <div class="alert alert-warn" id="hwModelBanner" hidden></div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <div class="card-head">
+          <h2 id="hwInputTitle">Write something below</h2>
+          <span class="pill" id="hwModelPill">● -</span>
+        </div>
+        <!-- 4-class tab only: the second input method (handwriting.js). -->
+        <div class="hw-upload-bar" id="hwUploadBar">
+          <span><b>Write on the canvas</b> or</span>
+          <label class="btn hw-upload-btn" for="hwImageInput">⬆ Upload Handwriting Image</label>
+          <input type="file" id="hwImageInput" accept=".png,.jpg,.jpeg,.webp,image/png,image/jpeg,image/webp"
+                 hidden onchange="onImageChosen(this)">
+          <span class="small" id="hwUploadNote">PNG, JPG or WEBP · max 10 MB</span>
+        </div>
+        <div class="hw-image-wrap" id="hwImageWrap" hidden>
+          <img id="hwImagePreview" alt="Uploaded handwriting image preview">
+          <div class="hw-image-info">
+            <span class="small">Uploaded: <b id="hwImageName"></b></span>
+            <button class="secondary small-btn" onclick="removeImage()">Remove Image</button>
+          </div>
+          <p class="small">A static image has no timing or pen pressure: the model sees the shape of the
+            writing only, with the stroke order estimated from the ink.</p>
+        </div>
+        <div class="hw-canvas-wrap" id="hwCanvasWrap">
+          <canvas id="hwCanvas" class="hw-canvas" aria-label="Handwriting canvas"></canvas>
+          <div class="hw-placeholder" id="hwPlaceholder">Write a word or a sentence here</div>
+        </div>
+        <div class="row">
+          <button class="secondary" id="btnHwClear" onclick="clearCanvas()">Clear</button>
+          <button class="success" id="btnHwAnalyze" onclick="analyzeHandwriting()">Analyze Handwriting</button>
+          <button class="success" id="btnHwSave" onclick="saveSample()" hidden>Save Sample</button>
+        </div>
+        <div class="small" id="hwCaptured">
+          Captured: <b id="hwPoints">0</b> points · <b id="hwStrokes">0</b> strokes ·
+          <b id="hwDuration">0.0s</b> · input: <b id="hwDevice">-</b> ·
+          pressure: <b id="hwPressure">-</b>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <!-- Two SEPARATE experiments; each has its own model and endpoint. -->
+        <div class="hw-modes" role="tablist" aria-label="Handwriting model">
+          <button class="hw-mode active" data-mode="emothaw" role="tab" onclick="setHwMode('emothaw')">
+            Anxiety · Depression · Stress <span class="small">(EMOTHAW)</span></button>
+          <button class="hw-mode" data-mode="4class" role="tab" onclick="setHwMode('4class')">
+            Happy · Neutral · Sad · Angry <span class="hw-tag">PROTOTYPE</span></button>
+          <button class="hw-mode" data-mode="collect" role="tab" onclick="setHwMode('collect')">
+            Collect samples</button>
+        </div>
+        <div class="alert alert-error" id="hwError" hidden></div>
+
+        <div id="hwEmothawPanel">
+        <h2>Handwriting Indicators</h2>
+        <div class="emotion-display" id="hwSummaryBox">
+          <div class="emotion-emoji" id="hwEmoji">✍️</div>
+          <div>
+            <div class="emotion-label" id="hwSummaryLabel">Elevated indicators</div>
+            <div class="emotion-value" id="hwSummary">-</div>
+            <div class="small" id="hwMeta"></div>
+          </div>
+        </div>
+        <!-- One row per EMOTHAW target: prediction + probability of "elevated" (filled by handwriting.js). -->
+        <div id="hwHeads">
+          {% for t in ["Anxiety", "Depression", "Stress"] %}
+          <div class="hw-head" data-target="{{ t }}">
+            <div class="hw-head-title"><span>{{ t }}</span><span class="hw-head-label">-</span></div>
+            <div class="voice-bar-row">
+              <span>P(elevated)</span>
+              <div class="voice-bar-track"><div class="voice-bar-fill" style="width:0%"></div></div>
+              <span class="voice-bar-pct">-</span>
+            </div>
+          </div>
+          {% endfor %}
+        </div>
+        </div>
+
+        <div id="hw4Panel" hidden>
+          <!-- 4-class prototype (Happy / Neutral / Sad / Angry), filled by handwriting.js. -->
+          <h2>Emotion <span class="hw-tag">PROTOTYPE</span></h2>
+          <div class="alert alert-warn" id="hw4Notice">{{ prototype_notice }}</div>
+          <div class="emotion-display">
+            <div class="emotion-emoji" id="hw4Emoji">✍️</div>
+            <div>
+              <div class="emotion-label">Prediction</div>
+              <div class="emotion-value" id="hw4Summary">-</div>
+              <div id="hw4Confidence"><b>Confidence:</b> -</div>
+              <div class="small" id="hw4Meta"></div>
+            </div>
+          </div>
+          <div class="emotion-label">Probabilities</div>
+          <div class="voice-bars" id="hw4Bars">
+            {% for c in four_class_labels %}
+            <div class="voice-bar-row" data-class="{{ c }}">
+              <span>{{ c }}</span>
+              <div class="voice-bar-track"><div class="voice-bar-fill" style="width:0%"></div></div>
+              <span class="voice-bar-pct">-</span>
+            </div>
+            {% endfor %}
+          </div>
+        </div>
+        <!-- Collect mode: participant samples for the 4-class dataset (handwriting.js). -->
+        <div id="hwCollectPanel" hidden>
+          <h2>Collect handwriting samples</h2>
+          <div class="hw-collect-row">
+            <label for="hwWriterId"><b>Writer ID:</b></label>
+            <input id="hwWriterId" class="hw-writer" placeholder="writer_001" autocomplete="off"
+                   pattern="writer_[0-9]{3,6}" oninput="onWriterIdChange()">
+            <button class="secondary small-btn" onclick="useNextWriterId()">New ID</button>
+          </div>
+          <p class="small">Anonymous ID only - never a name. Keep the same ID for all of your samples.</p>
+          <div><b>Select label:</b></div>
+          <div class="hw-labels" id="hwLabels">
+            {% for c in four_class_labels %}
+            <button class="hw-label" data-label="{{ c }}" onclick="selectLabel('{{ c }}')">{{ c }}</button>
+            {% endfor %}
+          </div>
+          <div class="hw-prompt"><b>Prompt:</b> Write naturally for this sample.</div>
+          <p class="small">Please do not write names or other personal information.</p>
+          <div class="alert alert-ok" id="hwSaved" hidden></div>
+          <table class="hw-counts">
+            <thead><tr><th></th><th>All writers</th><th>This writer</th></tr></thead>
+            <tbody>
+              {% for c in four_class_labels %}
+              <tr><td>{{ c }}:</td><td id="hwCountAll{{ c }}">0</td><td id="hwCountMine{{ c }}">-</td></tr>
+              {% endfor %}
+            </tbody>
+          </table>
+          <p class="small" id="hwCollectMeta"></p>
+        </div>
+        <div class="alert alert-warn" id="hwDefaulted" hidden></div>
+      </div>
+
+      <div class="card">
+        <h2 id="hwAboutTitle">About this model</h2>
+        <p class="small" id="hwModelInfo">-</p>
+        <div id="hwAboutEmothaw">
+        <p class="small">
+          A small Transformer reads the pen trajectory (position, timing, speed, acceleration,
+          direction, stroke boundaries and, from a stylus, pressure and pen altitude) and pools it
+          with learned attention. It is trained on the <b>EMOTHAW</b> dataset and predicts that
+          dataset's three targets independently: <b>Anxiety, Depression and Stress</b>, each
+          <i>normal</i> or <i>elevated</i> (above the normal band of the participant's DASS-42
+          questionnaire score). These are not the camera or voice emotions.
+        </p>
+        <p class="small">
+          This is a research demonstration, not a diagnosis. EMOTHAW was recorded with a Wacom pen
+          tablet; mouse, trackpad or finger writing moves differently and reports no pressure or
+          tilt, which lowers reliability.
+        </p>
+        </div>
+        <div id="hwAbout4" hidden>
+        <p class="small">
+          <b>Happy · Neutral · Sad · Angry</b> is a separate, <b>prototype</b> model with its own
+          checkpoint. No suitable public handwriting dataset with these four emotions is available
+          yet, so it is trained on <b>seed data derived from graphology reference examples</b>.
+          Graphology is not a scientifically validated source of emotion labels: the seed data only
+          exists to build and test the 4-class pipeline and will be replaced by a real
+          emotion-labelled dataset. Where the examples were images, the stroke order was estimated
+          and no timing or pressure exists, so this model uses the shape of the writing only.
+        </p>
+        <p class="small">
+          You can write on the canvas or upload a handwriting image (PNG, JPG or WEBP). An uploaded
+          image is turned into estimated strokes; it has no timing or pen pressure.
+        </p>
+        </div>
+        <div id="hwAboutCollect" hidden>
+        <p class="small">
+          Samples collected here are saved as raw canvas trajectories (positions, timing and, from a
+          stylus, pressure and tilt) with the anonymous writer ID and the label the participant
+          chose. They are used to train the 4-class model with a writer-independent evaluation. The
+          labels are the participants' choices, not validated emotional states.
+        </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script>window.HW_INITIAL_MODE = {{ initial_mode | tojson }};</script>
+<script src="{{ url_for('static', filename='js/handwriting.js') }}"></script>
+{% endblock %}

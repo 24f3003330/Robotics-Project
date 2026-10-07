@@ -1,0 +1,36 @@
+# Python 3.12 - Flask + OpenCV camera + BLE xArm robot
+flask
+opencv-python<5       # app.py uses cv2.CascadeClassifier, which OpenCV 5 no longer provides
+numpy
+bleak
+
+# Live voice emotion from tone of voice (emotion_detector.py)
+torch>=2.6              # 2.6+ is required by transformers to load the model's .bin weights
+transformers>=4.40,<5   # pretrained HuBERT emotion model: superb/hubert-base-superb-er
+sounddevice>=0.5        # real-time microphone capture for the /voice pipeline
+                        # (PortAudio is bundled in the macOS and Windows wheels)
+silero-vad>=5.1         # voice activity detection (model file ships inside the package; pulls in torchaudio)
+
+# Speaker gender from the voice (voice_gender.py; models/gender/ from the
+# Gender-Detection project). Reuses torch/transformers above for the frozen
+# facebook/hubert-base-ls960 encoder; the SVM + scaler are scikit-learn pickles.
+# They were saved with scikit-learn 1.9.1 (Python 3.11+). On Python 3.9 the newest
+# is 1.6.1, which was checked to give identical probabilities (it logs an
+# InconsistentVersionWarning when loading).
+scikit-learn>=1.6
+joblib
+
+# Body Vitals (body_vitals/): WESAD feature extraction, Random Forest, metadata checks.
+# xgboost is optional (compared during `python -m body_vitals.train` when importable);
+# matplotlib is optional (writes body_vitals/results/confusion_matrix.png).
+scipy
+pandas
+xgboost
+matplotlib
+
+# Voice age-group estimation (voice_age/, scripts/*voice_age*). Common Voice is read
+# straight from the Hugging Face Hub with HTTP range requests (huggingface_hub, already
+# installed with transformers): pyarrow decodes only the needed Parquet column chunks,
+# soundfile decodes the clips' MP3 audio. The `datasets` package is not needed.
+pyarrow>=17
+soundfile>=0.12

@@ -1,0 +1,15 @@
+SVM (v2, 90 s, rest-calibrated)
+test subjects S4, S6, S10 - 115 windows unseen in training
+
+              precision    recall  f1-score   support
+
+    Baseline      0.879     0.962     0.919        53
+      Stress      1.000     0.976     0.988        41
+   Amusement      0.824     0.667     0.737        21
+
+    accuracy                          0.913       115
+   macro avg      0.901     0.868     0.881       115
+weighted avg      0.912     0.913     0.910       115
+
+balanced accuracy 0.868   macro F1 0.881
+majority-class baseline (always 'baseline'): accuracy 0.461, balanced accuracy 0.333, macro F1 0.210

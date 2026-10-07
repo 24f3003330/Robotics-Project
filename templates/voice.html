@@ -1,0 +1,166 @@
+{% extends "base.html" %}
+{% block title %}Voice{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div>
+      <h1>🎙️ Voice Emotion Recognition</h1>
+      <p class="small">
+        Emotion from the <b>tone of voice</b> on this computer's microphone, analysed continuously.
+        No speech-to-text is used and this page never uses the camera.
+      </p>
+    </div>
+    <div class="page-links">
+      <a class="btn btn-ghost" href="{{ url_for('landing') }}">← Back to Home</a>
+      <a class="btn btn-ghost" href="{{ url_for('camera') }}">🎥 Camera Recognition</a>
+    </div>
+  </div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <div class="card-head">
+          <h2>Live Voice Emotion</h2>
+          <span class="pill" id="voiceMicPill">● Stopped</span>
+        </div>
+
+        <div class="row">
+          <label class="small" for="voiceDevice">Microphone</label>
+          <select id="voiceDevice" class="grow"><option value="">System default</option></select>
+          <button class="secondary" onclick="loadVoiceDevices()">Refresh</button>
+        </div>
+        <div class="row">
+          <button id="btnStartVoice" class="success" onclick="startVoice()">Start Listening</button>
+          <button id="btnStopVoice" class="danger" hidden onclick="stopVoice()">Stop Listening</button>
+          <span class="small" id="voiceModelState"></span>
+        </div>
+
+        <div class="alert alert-error" id="voiceErrorBox" hidden>
+          <div id="voiceErrorText"></div>
+          <div class="small" id="voiceErrorDetail"></div>
+        </div>
+        <div class="alert alert-warn" id="voiceWarning" hidden></div>
+
+        <div class="emotion-display" id="voiceDisplay">
+          <div class="emotion-emoji" id="voiceEmoji">🎙️</div>
+          <div>
+            <div class="emotion-label">Current voice emotion</div>
+            <div class="emotion-value" id="voiceEmotion">-</div>
+            <div class="small">Confidence: <b id="voiceConfidence">-</b> &nbsp;·&nbsp;
+              Speech: <b id="voiceSpeech">-</b></div>
+          </div>
+        </div>
+
+        <div class="voice-bars idle" id="voiceBars">
+          <div class="voice-bar-row">
+            <span>Happy</span>
+            <div class="voice-bar-track"><div class="voice-bar-fill" id="bar-happy" style="background:#f59e0b"></div></div>
+            <span class="voice-bar-pct" id="pct-happy">0%</span>
+          </div>
+          <div class="voice-bar-row">
+            <span>Angry</span>
+            <div class="voice-bar-track"><div class="voice-bar-fill" id="bar-angry" style="background:#dc2626"></div></div>
+            <span class="voice-bar-pct" id="pct-angry">0%</span>
+          </div>
+          <div class="voice-bar-row">
+            <span>Sad</span>
+            <div class="voice-bar-track"><div class="voice-bar-fill" id="bar-sad" style="background:#4f46e5"></div></div>
+            <span class="voice-bar-pct" id="pct-sad">0%</span>
+          </div>
+          <div class="voice-bar-row">
+            <span>Neutral</span>
+            <div class="voice-bar-track"><div class="voice-bar-fill" id="bar-neutral" style="background:#0ea5e9"></div></div>
+            <span class="voice-bar-pct" id="pct-neutral">0%</span>
+          </div>
+        </div>
+
+        <div class="small">Stable emotion (debounced, drives music/robot): <b id="voiceStable">-</b>
+          &nbsp;(confident speech <span id="voiceStreak">0.0s/2.0s</span>)</div>
+        <div class="small">Predictions: <b id="voicePredictions">0</b>
+          &nbsp;·&nbsp; last <span id="voicePredictionAge">-</span>
+          &nbsp;·&nbsp; buffered <span id="voiceBuffered">-</span></div>
+        <div class="small">Microphone: <b id="voiceMic">Stopped</b></div>
+        <div class="small">Robot trigger: <b id="voiceRobotMode">-</b></div>
+
+        <!-- Ensemble debugging. Hidden entirely when a single model is running. -->
+        <details class="small" id="voiceEnsembleBox" hidden>
+          <summary>Ensemble: <b id="voiceEnsembleSummary">-</b></summary>
+          <div id="voiceEnsembleMembers" class="mono"></div>
+        </details>
+      </div>
+
+      <div class="card">
+        <div class="card-head">
+          <h2>Speaker Gender</h2>
+          <span class="pill" id="genderPill">● -</span>
+        </div>
+        <div class="emotion-display" id="genderDisplay">
+          <div class="emotion-emoji" id="genderEmoji">🗣️</div>
+          <div>
+            <div class="emotion-label">Detected from the voice</div>
+            <div class="emotion-value" id="genderValue">-</div>
+            <div class="small">Confidence: <b id="genderConfidence">-</b> &nbsp;·&nbsp;
+              Segments: <b id="genderSegments">0</b> &nbsp;·&nbsp;
+              Buffered speech: <b id="genderBuffered">-</b></div>
+          </div>
+        </div>
+        <div class="voice-bars idle" id="genderBars">
+          <div class="voice-bar-row">
+            <span>Male</span>
+            <div class="voice-bar-track"><div class="voice-bar-fill" id="gbar-male" style="background:#0ea5e9"></div></div>
+            <span class="voice-bar-pct" id="gpct-male">0%</span>
+          </div>
+          <div class="voice-bar-row">
+            <span>Female</span>
+            <div class="voice-bar-track"><div class="voice-bar-fill" id="gbar-female" style="background:#db2777"></div></div>
+            <span class="voice-bar-pct" id="gpct-female">0%</span>
+          </div>
+        </div>
+        <div class="alert alert-warn" id="genderWarning" hidden></div>
+        <p class="small">
+          Uses the same microphone and speech detection as the emotion above. Frozen HuBERT
+          (<code>facebook/hubert-base-ls960</code>) + SVM classifies each 1.5-3 s of speech; the
+          result averages the last 3 segments and resets after 6 s of silence. It predicts male /
+          female from vocal characteristics only and does not affect music or the robot.
+        </p>
+      </div>
+
+      <!-- Separate model from the voice emotion above (and from gender): see voice_age/. -->
+      <div class="card" id="ageCard">
+        <div class="card-head">
+          <h2>Voice Age Estimation</h2>
+          <span class="pill" id="agePill">● -</span>
+        </div>
+        <div class="emotion-display" id="ageDisplay">
+          <div class="emotion-emoji" aria-hidden="true">⏳</div>
+          <div>
+            <div class="emotion-label">Estimated age group from voice</div>
+            <div class="emotion-value" id="ageValue">-</div>
+            <div class="small">Confidence: <b id="ageConfidence">-</b> &nbsp;·&nbsp;
+              Windows: <b id="ageWindows">0</b> &nbsp;·&nbsp;
+              Buffered speech: <b id="ageBuffered">-</b></div>
+          </div>
+        </div>
+        <div class="voice-bars idle" id="ageBars"></div>
+        <div class="alert alert-warn" id="ageWarning" hidden></div>
+        <p class="small" id="ageAbout">
+          A separate model (not the emotion model): a frozen speech encoder + small classifier trained on
+          Common Voice, from the same microphone and speech detection. It needs about
+          {{ age_window_seconds|round(0)|int }} s of speech per estimate and averages recent estimates.
+        </p>
+        <p class="small age-disclaimer">{{ age_disclaimer }}</p>
+      </div>
+    </div>
+
+    <div>
+      {% include "_emotion_output.html" %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/common.js') }}"></script>
+<script src="{{ url_for('static', filename='js/voice.js') }}"></script>
+{% endblock %}

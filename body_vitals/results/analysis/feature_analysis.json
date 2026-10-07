@@ -1,0 +1,1275 @@
+{
+  "class_distribution_all_subjects": {
+    "baseline": 566,
+    "stress": 311,
+    "amusement": 165
+  },
+  "development_subjects": [
+    "S2",
+    "S3",
+    "S5",
+    "S7",
+    "S8",
+    "S9",
+    "S11",
+    "S13",
+    "S14",
+    "S15",
+    "S16",
+    "S17"
+  ],
+  "class_distribution_development": {
+    "baseline": 453,
+    "stress": 248,
+    "amusement": 132
+  },
+  "features": {
+    "hr_mean": {
+      "by_class": {
+        "baseline": {
+          "mean": 71.93899834944934,
+          "median": 72.14994077562173,
+          "std": 8.745509159147549,
+          "iqr": 10.43272057859808
+        },
+        "stress": {
+          "mean": 100.87135980335344,
+          "median": 93.9561413188396,
+          "std": 19.933785176914142,
+          "iqr": 35.00157437068307
+        },
+        "amusement": {
+          "mean": 74.18796117056912,
+          "median": 74.73881851127425,
+          "std": 10.53530156887604,
+          "iqr": 17.440690007279002
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.06636758527380189,
+          "within_subject_d_median": -1.9493901393939592,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.4280888353736036,
+          "within_subject_d_median": -0.036894455404994184,
+          "subjects_a_greater": 5,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.8824535679374389,
+          "within_subject_d_median": 1.9063610299994669,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.23332630989813083
+    },
+    "hr_std": {
+      "by_class": {
+        "baseline": {
+          "mean": 5.865187430018669,
+          "median": 5.756755094229026,
+          "std": 1.9445430604439315,
+          "iqr": 2.3560966149451206
+        },
+        "stress": {
+          "mean": 7.843355496006296,
+          "median": 7.470087503676211,
+          "std": 2.692518691051807,
+          "iqr": 3.1212719767805
+        },
+        "amusement": {
+          "mean": 6.68063314255734,
+          "median": 6.270581639932862,
+          "std": 2.4170016483262438,
+          "iqr": 3.0329525860338293
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.2673752047283344,
+          "within_subject_d_median": -1.0235188630679057,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.40872299150444846,
+          "within_subject_d_median": -0.4466239728975988,
+          "subjects_a_greater": 4,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.6345613391984359,
+          "within_subject_d_median": 0.4930032806897518,
+          "subjects_a_greater": 8,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.24657743280101393
+    },
+    "hr_min": {
+      "by_class": {
+        "baseline": {
+          "mean": 60.27596484976484,
+          "median": 60.69364161849711,
+          "std": 7.509842388199596,
+          "iqr": 10.200707804214986
+        },
+        "stress": {
+          "mean": 81.44072819178332,
+          "median": 74.73309608540926,
+          "std": 19.6812675905864,
+          "iqr": 30.87957511529781
+        },
+        "amusement": {
+          "mean": 61.12835246943918,
+          "median": 59.574947537428,
+          "std": 10.53854494658826,
+          "iqr": 17.626489938330245
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.13582834864345225,
+          "within_subject_d_median": -1.4773175423425964,
+          "subjects_a_greater": 1,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.4910194661850291,
+          "within_subject_d_median": 0.08289171053514378,
+          "subjects_a_greater": 6,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.8189302297165201,
+          "within_subject_d_median": 1.7376423203321925,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.2762979523296019
+    },
+    "hr_max": {
+      "by_class": {
+        "baseline": {
+          "mean": 85.85026269696182,
+          "median": 85.88957055214723,
+          "std": 9.56917506116846,
+          "iqr": 13.169777242624932
+        },
+        "stress": {
+          "mean": 116.39621171930808,
+          "median": 110.52708121247377,
+          "std": 19.136555656436876,
+          "iqr": 32.29745317669918
+        },
+        "amusement": {
+          "mean": 89.6461863119259,
+          "median": 93.33333333333331,
+          "std": 11.359370961858469,
+          "iqr": 19.598642097334675
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.05257957701345866,
+          "within_subject_d_median": -1.8984987467223742,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.38597899525051843,
+          "within_subject_d_median": -0.3675285316842437,
+          "subjects_a_greater": 3,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.8888532502443792,
+          "within_subject_d_median": 1.7343695486703856,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.1972259970374274
+    },
+    "hrv_sdnn": {
+      "by_class": {
+        "baseline": {
+          "mean": 69.76045679466463,
+          "median": 63.65844959427257,
+          "std": 26.537939775983634,
+          "iqr": 31.51955681809619
+        },
+        "stress": {
+          "mean": 55.265075368408446,
+          "median": 52.38620360624161,
+          "std": 28.72247139117808,
+          "iqr": 39.36965952114695
+        },
+        "amusement": {
+          "mean": 76.14492697535088,
+          "median": 70.7759789315478,
+          "std": 32.24885485501892,
+          "iqr": 44.87610772079187
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.6528786584063234,
+          "within_subject_d_median": 0.551910824603617,
+          "subjects_a_greater": 7,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.4454645795705398,
+          "within_subject_d_median": -0.621513015206183,
+          "subjects_a_greater": 4,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.31225562072336266,
+          "within_subject_d_median": -1.1052981344163066,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.45044942618125455
+    },
+    "hrv_rmssd": {
+      "by_class": {
+        "baseline": {
+          "mean": 50.63787100487718,
+          "median": 45.91280652516092,
+          "std": 25.22850728136215,
+          "iqr": 29.485543818442185
+        },
+        "stress": {
+          "mean": 29.53439165063985,
+          "median": 27.873409728077405,
+          "std": 21.00580044720968,
+          "iqr": 27.961463474734323
+        },
+        "amusement": {
+          "mean": 49.63403736644856,
+          "median": 42.111164112338244,
+          "std": 30.357865640667594,
+          "iqr": 46.790685336207645
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.7496172470269885,
+          "within_subject_d_median": 1.418199443148769,
+          "subjects_a_greater": 9,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.5394507993845742,
+          "within_subject_d_median": -0.27112075636396715,
+          "subjects_a_greater": 5,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.2939882697947214,
+          "within_subject_d_median": -1.0668836570686566,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.5535812752100342
+    },
+    "eda_mean": {
+      "by_class": {
+        "baseline": {
+          "mean": 4.133331851167949,
+          "median": 3.702575179614144,
+          "std": 2.8991993554195084,
+          "iqr": 4.103554373984252
+        },
+        "stress": {
+          "mean": 6.168526395952133,
+          "median": 4.348728382518178,
+          "std": 4.252524834651018,
+          "iqr": 4.061214605522111
+        },
+        "amusement": {
+          "mean": 4.644214502886182,
+          "median": 3.4547723424323307,
+          "std": 2.9453720722493024,
+          "iqr": 3.5244616433520823
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.32370220038453323,
+          "within_subject_d_median": -2.0601792100199363,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.42795504716034516,
+          "within_subject_d_median": -0.7066137364546073,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.6351722873900293,
+          "within_subject_d_median": 1.335763970030749,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.928174788072899
+    },
+    "eda_std": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.024743095558905213,
+          "median": 0.0113346871485889,
+          "std": 0.04397868861179551,
+          "iqr": 0.013820205494464898
+        },
+        "stress": {
+          "mean": 0.10580332393937607,
+          "median": 0.0517267425092812,
+          "std": 0.17298731496910416,
+          "iqr": 0.12335133352649813
+        },
+        "amusement": {
+          "mean": 0.032834507082441955,
+          "median": 0.0178619428417101,
+          "std": 0.04075387215273504,
+          "iqr": 0.0237858047378683
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.17984048992380544,
+          "within_subject_d_median": -0.990323435452712,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.34044083216268645,
+          "within_subject_d_median": -0.15422572205315555,
+          "subjects_a_greater": 3,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.7310300586510264,
+          "within_subject_d_median": 0.8739812486760437,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.1862782589980106
+    },
+    "eda_min": {
+      "by_class": {
+        "baseline": {
+          "mean": 4.0900877961414634,
+          "median": 3.683262688205659,
+          "std": 2.8774651420806343,
+          "iqr": 3.7707008337534003
+        },
+        "stress": {
+          "mean": 5.9886337783729156,
+          "median": 4.165229829459706,
+          "std": 4.1639231728915815,
+          "iqr": 3.995661866506628
+        },
+        "amusement": {
+          "mean": 4.588055869958241,
+          "median": 3.4129819807108337,
+          "std": 2.9260167651038893,
+          "iqr": 3.5225324734195302
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.3295325072990102,
+          "within_subject_d_median": -2.117117042685722,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.42874105291323833,
+          "within_subject_d_median": -0.7095238604158095,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.6274437927663734,
+          "within_subject_d_median": 1.3271239411120495,
+          "subjects_a_greater": 10,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.9386152713656574
+    },
+    "eda_max": {
+      "by_class": {
+        "baseline": {
+          "mean": 4.18316888082426,
+          "median": 3.7268519942469314,
+          "std": 2.9214790911577384,
+          "iqr": 4.101931818464224
+        },
+        "stress": {
+          "mean": 6.434589720655787,
+          "median": 4.552279744775905,
+          "std": 4.40841951623638,
+          "iqr": 4.074417592028501
+        },
+        "amusement": {
+          "mean": 4.7177773394782045,
+          "median": 3.5141588581547927,
+          "std": 2.96850082584854,
+          "iqr": 3.7321739898592363
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.315281634978281,
+          "within_subject_d_median": -1.9939436407586741,
+          "subjects_a_greater": 1,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.4250451535219747,
+          "within_subject_d_median": -0.71214286163514,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.6452834799608993,
+          "within_subject_d_median": 1.2774888493685288,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.9040627142560013
+    },
+    "eda_range": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.09308108468279583,
+          "median": 0.0460212285049053,
+          "std": 0.15762254586186178,
+          "iqr": 0.0503419727073139
+        },
+        "stress": {
+          "mean": 0.44595594228287183,
+          "median": 0.2130881513227307,
+          "std": 0.630318843156085,
+          "iqr": 0.47833473097987644
+        },
+        "amusement": {
+          "mean": 0.1297214695199634,
+          "median": 0.07693417827358634,
+          "std": 0.15658142480099252,
+          "iqr": 0.09208864187719318
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.157738731040376,
+          "within_subject_d_median": -1.2100936336355885,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.3341527861395411,
+          "within_subject_d_median": -0.15744268182299037,
+          "subjects_a_greater": 1,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.7519550342130987,
+          "within_subject_d_median": 0.8761945112033565,
+          "subjects_a_greater": 12,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.2157316746841675
+    },
+    "eda_slope": {
+      "by_class": {
+        "baseline": {
+          "mean": -0.0007008220787961455,
+          "median": -0.0001140375316275,
+          "std": 0.002712248261883458,
+          "iqr": 0.0011766363326199
+        },
+        "stress": {
+          "mean": 0.0016824542472694923,
+          "median": 0.0009759147187596,
+          "std": 0.009164025426764777,
+          "iqr": 0.003332637987790975
+        },
+        "amusement": {
+          "mean": -0.00015132330530812828,
+          "median": -0.0001520357293712,
+          "std": 0.0021238074431165223,
+          "iqr": 0.0017919515388023998
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.27584027629423913,
+          "within_subject_d_median": -0.4617600377861728,
+          "subjects_a_greater": 5,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.4617365710080942,
+          "within_subject_d_median": -0.011084346485733528,
+          "subjects_a_greater": 6,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.6814516129032258,
+          "within_subject_d_median": 0.5617076876999433,
+          "subjects_a_greater": 7,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.02396825113468701
+    },
+    "eda_phasic_std": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.004283197508553599,
+          "median": 0.0031968931821021,
+          "std": 0.004731421590267478,
+          "iqr": 0.0033674860555146
+        },
+        "stress": {
+          "mean": 0.03780912603032559,
+          "median": 0.018763605681250448,
+          "std": 0.04804435616115821,
+          "iqr": 0.04193804219020967
+        },
+        "amusement": {
+          "mean": 0.00988245218567141,
+          "median": 0.0054278469371125005,
+          "std": 0.01540282155465801,
+          "iqr": 0.005563041114250226
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.08972441785943175,
+          "within_subject_d_median": -1.1798514088974337,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.322663723325975,
+          "within_subject_d_median": -0.1469234491717899,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.7980816226783969,
+          "within_subject_d_median": 0.9937853446715084,
+          "subjects_a_greater": 12,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.21859189461139605
+    },
+    "eda_scr_per_min": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.8631346578366446,
+          "median": 0.0,
+          "std": 1.5877812960910365,
+          "iqr": 1.0
+        },
+        "stress": {
+          "mean": 6.125,
+          "median": 5.0,
+          "std": 4.8845476421073215,
+          "iqr": 8.0
+        },
+        "amusement": {
+          "mean": 1.9924242424242424,
+          "median": 1.0,
+          "std": 2.2833489938694798,
+          "iqr": 3.0
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.13606423128961048,
+          "within_subject_d_median": -1.6149161719458194,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.33930363234998995,
+          "within_subject_d_median": -0.41727280353767043,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.7645711143695014,
+          "within_subject_d_median": 1.1600848238065804,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.2781317878339137
+    },
+    "resp_rate_mean": {
+      "by_class": {
+        "baseline": {
+          "mean": 16.740748233331505,
+          "median": 16.604800939037553,
+          "std": 2.266497124544625,
+          "iqr": 2.6169368485770814
+        },
+        "stress": {
+          "mean": 18.132783762600376,
+          "median": 18.109316818656353,
+          "std": 3.3192589574993083,
+          "iqr": 5.111697989614228
+        },
+        "amusement": {
+          "mean": 18.178380744998734,
+          "median": 17.886353916276768,
+          "std": 2.164521424900325,
+          "iqr": 2.8338394748749955
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.3716887417218543,
+          "within_subject_d_median": -0.40408174158350885,
+          "subjects_a_greater": 3,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.30572279082212855,
+          "within_subject_d_median": -0.7759172664712332,
+          "subjects_a_greater": 3,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.490072091886608,
+          "within_subject_d_median": 0.29788808471059947,
+          "subjects_a_greater": 7,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.42725475177650846
+    },
+    "resp_rate_std": {
+      "by_class": {
+        "baseline": {
+          "mean": 2.7723152825333783,
+          "median": 2.3785066124670813,
+          "std": 1.5386754834560246,
+          "iqr": 1.8587063969043198
+        },
+        "stress": {
+          "mean": 6.454503707628483,
+          "median": 6.574217631878468,
+          "std": 1.5168658531499233,
+          "iqr": 1.967188652243376
+        },
+        "amusement": {
+          "mean": 3.916251497681871,
+          "median": 3.771433954181402,
+          "std": 1.669203025307626,
+          "iqr": 2.321554658069245
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.058846044292530084,
+          "within_subject_d_median": -1.9179585603357747,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.2865743527995184,
+          "within_subject_d_median": -0.46806666579479894,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.8671493157380255,
+          "within_subject_d_median": 1.1191566142516496,
+          "subjects_a_greater": 12,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.080331722761982
+    },
+    "resp_rate_min": {
+      "by_class": {
+        "baseline": {
+          "mean": 12.276765819964037,
+          "median": 12.396694214876034,
+          "std": 3.0533086410723183,
+          "iqr": 3.80611581001952
+        },
+        "stress": {
+          "mean": 9.537623786943717,
+          "median": 9.036144578313252,
+          "std": 2.148481669040147,
+          "iqr": 2.581382099289513
+        },
+        "amusement": {
+          "mean": 11.603966876262337,
+          "median": 11.857892763404575,
+          "std": 3.036199059425837,
+          "iqr": 4.321574884934977
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.7748255358541623,
+          "within_subject_d_median": 1.1578411136276543,
+          "subjects_a_greater": 12,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.55918456084019,
+          "within_subject_d_median": 0.2988412893864214,
+          "subjects_a_greater": 9,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.2894367057673509,
+          "within_subject_d_median": -0.7190640125123537,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.2700903863630123
+    },
+    "resp_rate_max": {
+      "by_class": {
+        "baseline": {
+          "mean": 22.46558577959708,
+          "median": 21.42857142857143,
+          "std": 4.901317789352019,
+          "iqr": 6.192959582790088
+        },
+        "stress": {
+          "mean": 31.227440930691383,
+          "median": 32.2617946345976,
+          "std": 5.435572914574982,
+          "iqr": 8.062770562770567
+        },
+        "amusement": {
+          "mean": 26.052211858547228,
+          "median": 24.795081967213115,
+          "std": 5.20461176820306,
+          "iqr": 6.684491978609625
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.12729651783806878,
+          "within_subject_d_median": -1.972698629295735,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.29335574285905414,
+          "within_subject_d_median": -0.5288427101570603,
+          "subjects_a_greater": 1,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.7571939149560117,
+          "within_subject_d_median": 1.12671361226804,
+          "subjects_a_greater": 12,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.13229228974320703
+    },
+    "resp_interval_cv": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.17460099935746287,
+          "median": 0.1455944223579985,
+          "std": 0.10807571396530248,
+          "iqr": 0.1172623048411983
+        },
+        "stress": {
+          "mean": 0.3523066401534519,
+          "median": 0.3519363311038589,
+          "std": 0.07599016321485288,
+          "iqr": 0.09070310963380374
+        },
+        "amusement": {
+          "mean": 0.24027573964396187,
+          "median": 0.21341071056710614,
+          "std": 0.12607700731296592,
+          "iqr": 0.1382519892664388
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.09883927935626291,
+          "within_subject_d_median": -1.799295318205692,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.31562311860325104,
+          "within_subject_d_median": -0.5464011269627693,
+          "subjects_a_greater": 1,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.8057795698924731,
+          "within_subject_d_median": 0.9647221198233771,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.11883491118278736
+    },
+    "hr_median": {
+      "by_class": {
+        "baseline": {
+          "mean": 71.46752388255274,
+          "median": 71.79675994108985,
+          "std": 9.203855893413044,
+          "iqr": 11.705685618729092
+        },
+        "stress": {
+          "mean": 101.50993457188183,
+          "median": 95.23809523809524,
+          "std": 20.371366578518227,
+          "iqr": 35.77188886800653
+        },
+        "amusement": {
+          "mean": 73.59329694573226,
+          "median": 73.58742741266477,
+          "std": 10.84499906582518,
+          "iqr": 18.091648429644522
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.06879317097486293,
+          "within_subject_d_median": -2.012241647284215,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.43584855174259146,
+          "within_subject_d_median": -0.0564870071966973,
+          "subjects_a_greater": 4,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.8869745845552297,
+          "within_subject_d_median": 1.9955578429349705,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.22643795102001288
+    },
+    "hr_range": {
+      "by_class": {
+        "baseline": {
+          "mean": 25.57429784719697,
+          "median": 25.27828978017493,
+          "std": 7.461660082013932,
+          "iqr": 9.982530983197435
+        },
+        "stress": {
+          "mean": 34.95548352752478,
+          "median": 32.60090757105324,
+          "std": 12.230158001745165,
+          "iqr": 14.911164244384295
+        },
+        "amusement": {
+          "mean": 28.517833842486727,
+          "median": 27.64061770496202,
+          "std": 9.18529647408117,
+          "iqr": 11.982838515163088
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.263943779819127,
+          "within_subject_d_median": -0.9179316254598648,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.4149608669476219,
+          "within_subject_d_median": -0.2687183305944813,
+          "subjects_a_greater": 3,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.6551197458455523,
+          "within_subject_d_median": 0.5580941785996762,
+          "subjects_a_greater": 9,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.2247437418412779
+    },
+    "hr_cv": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.08234324204545826,
+          "median": 0.0772534266945367,
+          "std": 0.028108502216071724,
+          "iqr": 0.0349599579029765
+        },
+        "stress": {
+          "mean": 0.08141355218292166,
+          "median": 0.079151038864401,
+          "std": 0.032595584656307276,
+          "iqr": 0.043875382532963275
+        },
+        "amusement": {
+          "mean": 0.0914277782354991,
+          "median": 0.0830103557402712,
+          "std": 0.03389572967585919,
+          "iqr": 0.04689651029865656
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.5133963540554013,
+          "within_subject_d_median": -0.21169713065699675,
+          "subjects_a_greater": 5,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.42783798247374405,
+          "within_subject_d_median": -0.4610376909178714,
+          "subjects_a_greater": 3,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.4184078690127077,
+          "within_subject_d_median": -0.29500489817949993,
+          "subjects_a_greater": 3,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.3674759876348748
+    },
+    "hrv_pnn50": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.27427307546640484,
+          "median": 0.2615384615384615,
+          "std": 0.19658499160868384,
+          "iqr": 0.30361445783132535
+        },
+        "stress": {
+          "mean": 0.11045059155070427,
+          "median": 0.061792032582410505,
+          "std": 0.1283280989202982,
+          "iqr": 0.1743537015276145
+        },
+        "amusement": {
+          "mean": 0.2484468847337105,
+          "median": 0.1935282581565341,
+          "std": 0.2177728589346183,
+          "iqr": 0.38062886068606544
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.7696806237983337,
+          "within_subject_d_median": 1.5808124149502798,
+          "subjects_a_greater": 9,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.5561074319352465,
+          "within_subject_d_median": 0.05393149862168908,
+          "subjects_a_greater": 6,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.30185422776148585,
+          "within_subject_d_median": -0.8774453722050747,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.5345763854323348
+    },
+    "eda_cv": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.006617077454646969,
+          "median": 0.0035774655669309,
+          "std": 0.008869745237656868,
+          "iqr": 0.005176690555482
+        },
+        "stress": {
+          "mean": 0.01761285837922896,
+          "median": 0.0097827910198611,
+          "std": 0.022094756941990062,
+          "iqr": 0.017875021177046528
+        },
+        "amusement": {
+          "mean": 0.009453561599760006,
+          "median": 0.00443683833668945,
+          "std": 0.01198350065870889,
+          "iqr": 0.008322844642032201
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.24213131097343873,
+          "within_subject_d_median": -1.0020710324699238,
+          "subjects_a_greater": 1,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.3977021874372868,
+          "within_subject_d_median": -0.20273446767856199,
+          "subjects_a_greater": 2,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.6780913978494624,
+          "within_subject_d_median": 0.6383284292652098,
+          "subjects_a_greater": 10,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.30987733050924676
+    },
+    "eda_scr_amp_mean": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.011386900167355298,
+          "median": 0.0,
+          "std": 0.01880138793561877,
+          "iqr": 0.0242731617099121
+        },
+        "stress": {
+          "mean": 0.07735823680002864,
+          "median": 0.056648460349867605,
+          "std": 0.07680500865552048,
+          "iqr": 0.06209112797661567
+        },
+        "amusement": {
+          "mean": 0.026091776008858245,
+          "median": 0.02522014294903685,
+          "std": 0.031293320091187495,
+          "iqr": 0.034059464884389275
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.11908958199814855,
+          "within_subject_d_median": -1.7021200998970678,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.33191183356746273,
+          "within_subject_d_median": -0.3395729214903872,
+          "subjects_a_greater": 1,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.7797989980449658,
+          "within_subject_d_median": 1.0480632650484896,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.21125269738410551
+    },
+    "eda_scr_amp_max": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.014112381773380272,
+          "median": 0.0,
+          "std": 0.027301962866105384,
+          "iqr": 0.0255955400835894
+        },
+        "stress": {
+          "mean": 0.18215733445001148,
+          "median": 0.09321552025557861,
+          "std": 0.2319309818367607,
+          "iqr": 0.1964870276846506
+        },
+        "amusement": {
+          "mean": 0.04495522954173987,
+          "median": 0.0279944019357294,
+          "std": 0.07920874786116654,
+          "iqr": 0.041967278053291125
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.11700669372641173,
+          "within_subject_d_median": -1.4673517046241173,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.33005552210850225,
+          "within_subject_d_median": -0.2135733220805722,
+          "subjects_a_greater": 1,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.777110826001955,
+          "within_subject_d_median": 1.2204279339874988,
+          "subjects_a_greater": 11,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.23340665728337537
+    },
+    "resp_amp_mean": {
+      "by_class": {
+        "baseline": {
+          "mean": 6.706641218491989,
+          "median": 6.567935045007356,
+          "std": 2.0540692310757467,
+          "iqr": 2.518517870010121
+        },
+        "stress": {
+          "mean": 9.757889036721888,
+          "median": 9.292471079779933,
+          "std": 3.5938415268703734,
+          "iqr": 4.546907199602228
+        },
+        "amusement": {
+          "mean": 7.391242380231871,
+          "median": 7.007331769154239,
+          "std": 2.2668907686127753,
+          "iqr": 3.394612194802143
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.2328206223741366,
+          "within_subject_d_median": -1.4154580294740189,
+          "subjects_a_greater": 1,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.4346444578232658,
+          "within_subject_d_median": -0.5225676079117754,
+          "subjects_a_greater": 4,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.7064088465298143,
+          "within_subject_d_median": 0.48243144446145414,
+          "subjects_a_greater": 9,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.31838932894510413
+    },
+    "resp_amp_cv": {
+      "by_class": {
+        "baseline": {
+          "mean": 0.31878632027857734,
+          "median": 0.2703653902789091,
+          "std": 0.203329701797816,
+          "iqr": 0.2619471668523389
+        },
+        "stress": {
+          "mean": 0.4866992139792737,
+          "median": 0.46546981005677024,
+          "std": 0.1306903464143953,
+          "iqr": 0.1655016668682981
+        },
+        "amusement": {
+          "mean": 0.3944873795375103,
+          "median": 0.36192556860942005,
+          "std": 0.20842504919546762,
+          "iqr": 0.3222360304267436
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.21662928149255856,
+          "within_subject_d_median": -1.0719733569836678,
+          "subjects_a_greater": 0,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.3824670546524851,
+          "within_subject_d_median": -0.43317983997832143,
+          "subjects_a_greater": 3,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.6619012707722385,
+          "within_subject_d_median": 0.6988808771480471,
+          "subjects_a_greater": 7,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.13979946189292977
+    },
+    "resp_ie_ratio": {
+      "by_class": {
+        "baseline": {
+          "mean": 1.2411579869660798,
+          "median": 1.1830970177912905,
+          "std": 0.27251036337662354,
+          "iqr": 0.3452180406295853
+        },
+        "stress": {
+          "mean": 0.9691864622694202,
+          "median": 0.9500148829624238,
+          "std": 0.17639710445824783,
+          "iqr": 0.2188189086795974
+        },
+        "amusement": {
+          "mean": 1.2770485311750102,
+          "median": 1.2423907109606236,
+          "std": 0.2306302772816982,
+          "iqr": 0.26358498774816685
+        }
+      },
+      "pairs": {
+        "baseline_vs_stress": {
+          "pooled_auc": 0.8100566118350779,
+          "within_subject_d_median": 1.0463655633466755,
+          "subjects_a_greater": 12,
+          "n_subjects": 12
+        },
+        "baseline_vs_amusement": {
+          "pooled_auc": 0.4282393471135193,
+          "within_subject_d_median": -0.26366417673268266,
+          "subjects_a_greater": 3,
+          "n_subjects": 12
+        },
+        "stress_vs_amusement": {
+          "pooled_auc": 0.1227394916911046,
+          "within_subject_d_median": -1.3742081440391103,
+          "subjects_a_greater": 1,
+          "n_subjects": 12
+        }
+      },
+      "between_subject_variance_share": 0.30060063636578105
+    }
+  }
+}

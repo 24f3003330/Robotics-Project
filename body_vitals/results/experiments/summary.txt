@@ -1,0 +1,11 @@
+Development subjects: ['S2', 'S3', 'S5', 'S7', 'S8', 'S9', 'S11', 'S13', 'S14', 'S15', 'S16', 'S17']   (test ['S4', 'S6', 'S10'] never used)
+Scores: leave-one-subject-out CV over the development subjects (mean ± SD over 12 folds)
+
+reference (current)  w60 full/none v1 RandomForest  F1 0.620±0.123  bal 0.645  acc 0.765  rec B/S/A 0.87/0.88/0.19
+uncalibrated         RandomForest {"n_estimators": 500, "min_samples_leaf": 3, "max_features": "sqrt", "max_depth": null} w90 wesad-chest-v1 none
+                     F1 0.671±0.137  bal 0.700  acc 0.787  rec B/S/A 0.84/0.93/0.33
+calibrated           SVM {"C": 1.0, "gamma": "scale"} w90 wesad-chest-v2 calibrated
+                     F1 0.784±0.181  bal 0.793  acc 0.846  rec B/S/A 0.94/0.85/0.58
+uncalibrated selected, same windows as calibrated: F1 0.671±0.161  bal 0.688  acc 0.764  rec B/S/A 0.82/0.93/0.32
+fixed train->validation split: {"reference": {"accuracy": 0.7254901960784313, "balanced_accuracy": 0.5946037249003351, "macro_f1": 0.6130044578929738, "recall_baseline": 0.9553571428571429, "recall_stress": 0.5254237288135594, "recall_amusement": 0.30303030303030304}, "uncalibrated": {"accuracy": 0.7045454545454546, "balanced_accuracy": 0.5753024112793399, "macro_f1": 0.5868535262206148, "recall_baseline": 0.9452054794520548, "recall_stress": 0.4473684210526316, "recall_amusement": 0.3333333333333333}, "calibrated": {"accuracy": 0.7747747747747747, "balanced_accuracy": 0.7167919799498748, "macro_f1": 0.7161064857642101, "recall_baseline": 1.0, "recall_stress": 0.5789473684210527, "recall_amusement": 0.5714285714285714}}
+(861 s)

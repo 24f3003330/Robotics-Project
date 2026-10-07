@@ -1,0 +1,18 @@
+venv/
+.venv/
+# Trained member models and ensemble manifests are build artefacts (hundreds of
+# MB), but keep the note that explains how to produce them.
+models/*
+!models/ensemble/
+models/ensemble/*
+!models/ensemble/README.md
+runs/
+__pycache__/
+# EMOTHAW is licensed for non-commercial research and obtained on request -
+# never commit it (see data/README.md).
+data/*
+!data/README.md
+# WESAD is obtained from its authors - never commit it (keep it outside the repo
+# and pass --data / WESAD_DIR; see docs/BODY_VITALS.md).
+WESAD/
+**/WESAD/

@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Body Vitals{% endblock %}
+
+{% block content %}
+<div class="container">
+  <div class="page-head">
+    <div>
+      <h1>💓 Body Vitals</h1>
+      <p class="small">Physiological state from ECG (heart rate, HRV), skin conductance (GSR/EDA) and respiration.
+        This page never uses the camera or the microphone.</p>
+    </div>
+    <div class="page-links">
+      <a class="btn btn-ghost" href="{{ url_for('landing') }}">← Back to Home</a>
+      <a class="btn btn-ghost" href="{{ url_for('camera') }}">🎥 Camera</a>
+      <a class="btn btn-ghost" href="{{ url_for('voice') }}">🎙️ Voice</a>
+      <a class="btn btn-ghost" href="{{ url_for('handwriting_page') }}">✍️ Handwriting</a>
+    </div>
+  </div>
+
+  <div class="alert alert-warn" id="bvModelBanner" hidden></div>
+  <div class="alert alert-error" id="bvError" hidden></div>
+
+  <div class="grid">
+    <div>
+      <div class="card">
+        <div class="card-head">
+          <h2>Input</h2>
+          <span class="pill pill-idle" id="bvSourcePill">● No reading yet</span>
+        </div>
+        <p class="small">No physiological sensors are connected, so this page runs in <b>demo mode</b>: each button
+          synthesises one window of ECG, EDA and respiration waveforms for a scenario, measures them with the same
+          feature extractor used on WESAD, and passes the features to the trained model.</p>
+        <div class="row bv-demo-buttons">
+          {% for s in scenarios %}
+          <button class="secondary" data-scenario="{{ s }}" onclick="runDemo('{{ s }}')">{{ class_display[s] }} Demo</button>
+          {% endfor %}
+        </div>
+
+        <div class="bv-sim-banner" id="bvSimBanner" hidden>
+          <b>SIMULATED / DEMO VALUES</b>
+          <span id="bvSimNotice">{{ demo_notice }}</span>
+        </div>
+
+        <h3 class="bv-section-title">Body vitals <span class="bv-source-tag" id="bvSourceTag" hidden></span></h3>
+        <div class="bv-vitals" id="bvVitals">
+          <div class="bv-vital"><span class="bv-vital-label">Heart rate</span>
+            <span class="bv-vital-value"><b id="bvHr">-</b> <small>BPM</small></span></div>
+          <div class="bv-vital"><span class="bv-vital-label">HRV (SDNN)</span>
+            <span class="bv-vital-value"><b id="bvSdnn">-</b> <small>ms</small></span></div>
+          <div class="bv-vital"><span class="bv-vital-label">HRV (RMSSD)</span>
+            <span class="bv-vital-value"><b id="bvRmssd">-</b> <small>ms</small></span></div>
+          <div class="bv-vital"><span class="bv-vital-label">GSR / EDA</span>
+            <span class="bv-vital-value"><b id="bvGsr">-</b> <small>μS</small></span></div>
+          <div class="bv-vital"><span class="bv-vital-label">Respiration</span>
+            <span class="bv-vital-value"><b id="bvResp">-</b> <small>breaths/min</small></span></div>
+        </div>
+        <p class="small" id="bvQuality"></p>
+        <p class="small bv-calibration" id="bvCalibration" hidden></p>
+
+        <details class="bv-details">
+          <summary>All model input features (measured from the window)</summary>
+          <table class="bv-features" id="bvFeatures"><tbody></tbody></table>
+        </details>
+      </div>
+    </div>
+
+    <div>
+      <div class="card">
+        <div class="card-head">
+          <h2>ML predicted state</h2>
+          <span class="pill" id="bvModelPill">● checking model…</span>
+        </div>
+        <p class="bv-model-line">Model: <b id="bvModelName">trained on WESAD</b></p>
+        <div class="emotion-display" id="bvStateBox">
+          <div class="emotion-emoji" id="bvEmoji">💓</div>
+          <div>
+            <div class="emotion-label">Predicted physiological state</div>
+            <div class="emotion-value" id="bvState">-</div>
+            <div class="small">Confidence: <b id="bvConfidence">-</b>
+              <span id="bvScenario"></span></div>
+          </div>
+        </div>
+        <div class="emotion-label">Probabilities</div>
+        <div class="voice-bars bv-bars idle" id="bvBars">
+          {% for c in ['baseline', 'stress', 'amusement'] %}
+          <div class="voice-bar-row">
+            <span>{{ class_display[c] }}</span>
+            <div class="voice-bar-track"><div class="voice-bar-fill bv-fill-{{ c }}" id="bvBar-{{ c }}"></div></div>
+            <span class="voice-bar-pct" id="bvPct-{{ c }}">0%</span>
+          </div>
+          {% endfor %}
+        </div>
+        <p class="small" id="bvModelInfo">Trained on WESAD chest signals; classes are WESAD's study
+          conditions, not self-reported emotions and not a diagnosis.</p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/body_vitals.js') }}"></script>
+{% endblock %}

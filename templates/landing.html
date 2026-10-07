@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<section class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Real-time · Multimodal · Robot-ready</p>
+    <h1>Real-time multimodal emotion recognition</h1>
+    <p class="hero-lead">
+      Recognise human emotion live from a <b>face</b> on camera or from the <b>tone of a voice</b>
+      on the microphone, or analyse <b>handwriting</b> written on screen for signs of anxiety,
+      depression and stress, or classify <b>body vitals</b> (ECG, skin conductance, respiration) into
+      WESAD's baseline, stress and amusement conditions. Each detected camera or
+      voice emotion can drive mood music and an xArm robot that hands over a matching bottle.
+    </p>
+    <div class="hero-actions">
+      <a class="btn btn-lg" href="{{ url_for('camera') }}">🎥 Camera Emotion Recognition</a>
+      <a class="btn btn-lg btn-light" href="{{ url_for('voice') }}">🎙️ Voice Emotion Recognition</a>
+      <a class="btn btn-lg btn-light" href="{{ url_for('handwriting_page') }}">✍️ Handwriting Analysis</a>
+      <a class="btn btn-lg btn-light" href="{{ url_for('body_vitals.page') }}">💓 Body Vitals</a>
+    </div>
+  </div>
+</section>
+
+<div class="container">
+  <div class="mode-grid">
+    <a class="mode-card" href="{{ url_for('camera') }}">
+      <div class="mode-icon" aria-hidden="true">🎥</div>
+      <h2>Camera / Facial Emotion Recognition</h2>
+      <p>
+        Streams your webcam, detects faces with OpenCV and reads their expression frame by
+        frame. The detected emotion is stabilised over several frames before it is used.
+      </p>
+      <ul class="mode-points">
+        <li>Live webcam feed with face overlay</li>
+        <li>Continuous face detection and emotion updates</li>
+        <li>Uses the camera only - never the microphone</li>
+      </ul>
+      <span class="mode-cta">Open camera recognition →</span>
+    </a>
+
+    <a class="mode-card" href="{{ url_for('voice') }}">
+      <div class="mode-icon" aria-hidden="true">🎙️</div>
+      <h2>Voice / Speech Emotion Recognition</h2>
+      <p>
+        Listens to the microphone continuously, finds speech with voice-activity detection
+        and classifies every 2-4 s of speech with a HuBERT model. No speech-to-text: only the
+        tone of voice matters, never the words.
+      </p>
+      <ul class="mode-points">
+        <li>Happy, angry, sad and neutral probabilities, live</li>
+        <li>Predictions keep updating until you stop listening</li>
+        <li>Separate models: speaker gender and an estimated age group (approximate, self-reported training labels)</li>
+        <li>Uses the microphone only - never the camera</li>
+      </ul>
+      <span class="mode-cta">Open voice recognition →</span>
+    </a>
+
+    <a class="mode-card" href="{{ url_for('handwriting_page') }}">
+      <div class="mode-icon" aria-hidden="true">✍️</div>
+      <h2>Handwriting: Anxiety, Depression, Stress</h2>
+      <p>
+        Write a word or sentence on a canvas with a mouse, trackpad, touchscreen or stylus.
+        The pen trajectory (timing, speed, strokes, pressure and tilt where available) is
+        analysed by a small attention-based Transformer trained on the EMOTHAW dataset.
+      </p>
+      <ul class="mode-points">
+        <li>Anxiety, Depression and Stress: each normal or elevated, with its probability</li>
+        <li>Separate prototype: Happy, Neutral, Sad or Angry, trained on graphology-based seed data (not validated)</li>
+        <li>Analyses on demand when you press Analyze</li>
+        <li>No camera and no microphone</li>
+      </ul>
+      <span class="mode-cta">Open handwriting recognition →</span>
+    </a>
+
+    <a class="mode-card" href="{{ url_for('body_vitals.page') }}">
+      <div class="mode-icon" aria-hidden="true">💓</div>
+      <h2>Body Vitals: Baseline, Stress, Amusement</h2>
+      <p>
+        Heart rate and HRV from ECG, skin conductance (GSR/EDA) and respiration are turned into
+        physiological features, compared with the person's own 5-minute resting reference and
+        classified by an SVM trained on the WESAD dataset, evaluated on held-out subjects.
+      </p>
+      <ul class="mode-points">
+        <li>WESAD's own conditions: Baseline, Stress or Amusement, with probabilities</li>
+        <li>29 physiological features (HR, HRV, EDA, respiration) → one trained model</li>
+        <li>Demo mode with clearly labelled simulated inputs until sensors are connected</li>
+        <li>No camera and no microphone</li>
+      </ul>
+      <span class="mode-cta">Open body vitals →</span>
+    </a>
+  </div>
+
+  <section class="card how-it-works">
+    <h2>How it works</h2>
+    <div class="steps">
+      <div class="step"><span class="step-num">1</span><div><b>Pick a modality.</b> Camera, voice, handwriting and body vitals run as separate pipelines; each starts only on its own page.</div></div>
+      <div class="step"><span class="step-num">2</span><div><b>Allow access.</b> The app opens your webcam or microphone on this computer when the page asks for it; handwriting and body vitals need neither.</div></div>
+      <div class="step"><span class="step-num">3</span><div><b>Watch it update.</b> Emotions update continuously; music and the robot follow the detected emotion.</div></div>
+    </div>
+  </section>
+</div>
+{% endblock %}

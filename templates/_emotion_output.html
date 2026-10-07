@@ -1,0 +1,61 @@
+{# Shared by camera.html and voice.html: what the detected emotion drives
+   (final emotion, mood music, robot) plus manual override and robot control. #}
+<div class="card">
+  <h2>Emotion output</h2>
+  <div class="status" id="finalEmotionStatus">Final Emotion: -</div>
+  <div class="small">
+    Decided by: <b id="finalSource">-</b> &nbsp;·&nbsp; Confidence: <b id="finalConfidence">-</b>
+  </div>
+  <div>
+    <span class="pill" id="robotConnected">Robot: Unknown</span>
+    <span class="pill" id="robotBusy">Busy: Unknown</span>
+    <span class="pill" id="poseKey">Pose: -</span>
+  </div>
+  <div class="small">Robot last action: <b id="finalLastAction">-</b></div>
+  <p class="small">
+    Priority: <b>manual &gt; {{ 'voice' if active_page == 'voice' else 'face' }}</b>. Mood music,
+    background colour and the robot follow this final emotion.
+  </p>
+  <div class="small"><b>Mood music</b> - use the player's own controls to pause or mute it.</div>
+  <audio id="musicPlayer" controls preload="none"></audio>
+  <div class="small text-error" id="musicError"></div>
+</div>
+
+<div class="card">
+  <h2>Manual Emotion Trigger</h2>
+  <div class="row">
+    <button onclick="setEmotion('happy')">Happy → 30° Right Bottle</button>
+    <button class="danger" onclick="setEmotion('angry')">Angry → 60° Right Bottle</button>
+    <button class="secondary" onclick="setEmotion('neutral')">Neutral → 30° Left Bottle</button>
+    <button class="warning" onclick="setEmotion('sad')">Sad → 60° Left Bottle</button>
+  </div>
+  <div class="row">
+    <button class="secondary" onclick="clearManual()">Clear Manual Override</button>
+  </div>
+  <p class="small">
+    A manual emotion outranks the detected one for 30 s, then expires on its own.
+  </p>
+</div>
+
+<details class="card">
+  <summary><h2 class="inline">Robot BLE Control</h2></summary>
+  <div class="row">
+    <button onclick="scanRobot()">Scan Robot</button>
+    <select id="robotDevice" class="grow"></select>
+    <label class="small" for="writeIndex">Write Index</label>
+    <input id="writeIndex" value="0" style="width:50px;" />
+  </div>
+  <div class="row">
+    <button class="success" onclick="connectRobot()">Connect</button>
+    <button class="secondary" onclick="disconnectRobot()">Disconnect</button>
+    <button onclick="robotHome()">Home</button>
+    <button class="danger" onclick="robotStop()">STOP</button>
+  </div>
+  <div class="row">
+    <button onclick="runRobot('happy')">Run Happy</button>
+    <button onclick="runRobot('angry')">Run Angry</button>
+    <button onclick="runRobot('neutral')">Run Neutral</button>
+    <button onclick="runRobot('sad')">Run Sad</button>
+  </div>
+  <pre id="robotOutput" class="small"></pre>
+</details>

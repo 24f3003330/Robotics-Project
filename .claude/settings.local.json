@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(/private/tmp/claude-501/-Users-nivedita-Downloads-Robotics-Project-main/3c87e4b3-b303-45ac-bf95-ce663b994674/scratchpad/venv/bin/python /private/tmp/claude-501/-Users-nivedita-Downloads-Robotics-Project-main/3c87e4b3-b303-45ac-bf95-ce663b994674/scratchpad/test_routes.py)",
+      "WebSearch",
+      "Bash(cat README.md; grep -n -i \"handwriting\\\\|emothaw\\\\|calm\" docs/*.md static/css/app.css | head -40; ls -la .venv venv 2>/dev/null | head -3; which python3; python3 --version; ls ~/Downloads | head -50)",
+      "Read(//Users/nivedita/Downloads/**)"
+    ]
+  }
+}

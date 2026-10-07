@@ -1,0 +1,80 @@
+{
+  "reference": {
+    "confusion_matrix": [
+      [
+        394,
+        12,
+        47
+      ],
+      [
+        16,
+        218,
+        14
+      ],
+      [
+        88,
+        19,
+        25
+      ]
+    ],
+    "amusement_predicted_as_baseline": 88,
+    "amusement_total": 132,
+    "baseline_predicted_as_amusement": 47,
+    "baseline_total": 453,
+    "amusement_predicted_as_stress": 19,
+    "amusement_recall": 0.1893939393939394,
+    "amusement_precision": 0.29069767441860467
+  },
+  "uncalibrated": {
+    "confusion_matrix": [
+      [
+        250,
+        14,
+        33
+      ],
+      [
+        5,
+        148,
+        7
+      ],
+      [
+        45,
+        11,
+        28
+      ]
+    ],
+    "amusement_predicted_as_baseline": 45,
+    "amusement_total": 84,
+    "baseline_predicted_as_amusement": 33,
+    "baseline_total": 297,
+    "amusement_predicted_as_stress": 11,
+    "amusement_recall": 0.3333333333333333,
+    "amusement_precision": 0.4117647058823529
+  },
+  "calibrated": {
+    "confusion_matrix": [
+      [
+        201,
+        3,
+        9
+      ],
+      [
+        6,
+        137,
+        17
+      ],
+      [
+        23,
+        12,
+        49
+      ]
+    ],
+    "amusement_predicted_as_baseline": 23,
+    "amusement_total": 84,
+    "baseline_predicted_as_amusement": 9,
+    "baseline_total": 213,
+    "amusement_predicted_as_stress": 12,
+    "amusement_recall": 0.5833333333333334,
+    "amusement_precision": 0.6533333333333333
+  }
+}

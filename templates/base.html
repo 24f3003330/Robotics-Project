@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}Emotion Recognition{% endblock %} · Multimodal Emotion Recognition</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/app.css') }}" />
+</head>
+<body class="page-{{ active_page }}">
+  <header class="site-header">
+    <div class="site-header-inner">
+      <a class="brand" href="{{ url_for('landing') }}">
+        <span class="brand-mark" aria-hidden="true">◉</span>
+        <span>Multimodal Emotion Recognition</span>
+      </a>
+      <nav class="site-nav" aria-label="Main">
+        <a href="{{ url_for('landing') }}" class="{{ 'active' if active_page == 'home' }}">Home</a>
+        <a href="{{ url_for('camera') }}" class="{{ 'active' if active_page == 'camera' }}">🎥 Camera</a>
+        <a href="{{ url_for('voice') }}" class="{{ 'active' if active_page == 'voice' }}">🎙️ Voice</a>
+        <a href="{{ url_for('handwriting_page') }}" class="{{ 'active' if active_page == 'handwriting' }}">✍️ Handwriting</a>
+        <a href="{{ url_for('body_vitals.page') }}" class="{{ 'active' if active_page == 'body_vitals' }}">💓 Body Vitals</a>
+      </nav>
+    </div>
+  </header>
+
+  <div class="banner banner-error" id="connectionError" hidden></div>
+
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <footer class="site-footer">
+    Flask · OpenCV · HuBERT (<code>superb/hubert-base-superb-er</code>) · xArm over BLE
+  </footer>
+
+  {% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,690 @@
+{
+  "classes": [
+    "Teens",
+    "Twenties",
+    "Thirties",
+    "Forties",
+    "Fifties",
+    "Sixties",
+    "Seventies+"
+  ],
+  "splits": {
+    "train": {
+      "speakers": 5604,
+      "clips": 6462,
+      "by_group": {
+        "Teens": {
+          "clips": 955,
+          "speakers": 955
+        },
+        "Twenties": {
+          "clips": 961,
+          "speakers": 961
+        },
+        "Thirties": {
+          "clips": 956,
+          "speakers": 956
+        },
+        "Forties": {
+          "clips": 956,
+          "speakers": 956
+        },
+        "Fifties": {
+          "clips": 959,
+          "speakers": 959
+        },
+        "Sixties": {
+          "clips": 949,
+          "speakers": 556
+        },
+        "Seventies+": {
+          "clips": 726,
+          "speakers": 261
+        }
+      }
+    },
+    "validation": {
+      "speakers": 1205,
+      "clips": 1391,
+      "by_group": {
+        "Teens": {
+          "clips": 204,
+          "speakers": 204
+        },
+        "Twenties": {
+          "clips": 207,
+          "speakers": 207
+        },
+        "Thirties": {
+          "clips": 207,
+          "speakers": 207
+        },
+        "Forties": {
+          "clips": 206,
+          "speakers": 206
+        },
+        "Fifties": {
+          "clips": 203,
+          "speakers": 203
+        },
+        "Sixties": {
+          "clips": 204,
+          "speakers": 122
+        },
+        "Seventies+": {
+          "clips": 160,
+          "speakers": 56
+        }
+      }
+    },
+    "test": {
+      "speakers": 1213,
+      "clips": 1403,
+      "by_group": {
+        "Teens": {
+          "clips": 206,
+          "speakers": 206
+        },
+        "Twenties": {
+          "clips": 209,
+          "speakers": 209
+        },
+        "Thirties": {
+          "clips": 207,
+          "speakers": 207
+        },
+        "Forties": {
+          "clips": 210,
+          "speakers": 210
+        },
+        "Fifties": {
+          "clips": 204,
+          "speakers": 204
+        },
+        "Sixties": {
+          "clips": 204,
+          "speakers": 121
+        },
+        "Seventies+": {
+          "clips": 163,
+          "speakers": 56
+        }
+      }
+    }
+  },
+  "validation_metrics": {
+    "n": 1391,
+    "accuracy": 0.38533429187634793,
+    "balanced_accuracy": 0.391628635158813,
+    "macro_precision": 0.3829900656328764,
+    "macro_recall": 0.391628635158813,
+    "macro_f1": 0.38474085441611383,
+    "weighted_f1": 0.37961422128477185,
+    "per_class": {
+      "Teens": {
+        "precision": 0.5198019801980198,
+        "recall": 0.5147058823529411,
+        "f1": 0.5172413793103449,
+        "support": 204
+      },
+      "Twenties": {
+        "precision": 0.37916666666666665,
+        "recall": 0.4396135265700483,
+        "f1": 0.407158836689038,
+        "support": 207
+      },
+      "Thirties": {
+        "precision": 0.2968036529680365,
+        "recall": 0.3140096618357488,
+        "f1": 0.3051643192488263,
+        "support": 207
+      },
+      "Forties": {
+        "precision": 0.2923076923076923,
+        "recall": 0.18446601941747573,
+        "f1": 0.2261904761904762,
+        "support": 206
+      },
+      "Fifties": {
+        "precision": 0.305,
+        "recall": 0.30049261083743845,
+        "f1": 0.3027295285359802,
+        "support": 203
+      },
+      "Sixties": {
+        "precision": 0.3878504672897196,
+        "recall": 0.4068627450980392,
+        "f1": 0.39712918660287083,
+        "support": 204
+      },
+      "Seventies+": {
+        "precision": 0.5,
+        "recall": 0.58125,
+        "f1": 0.5375722543352601,
+        "support": 160
+      }
+    },
+    "confusion_matrix": [
+      [
+        105,
+        56,
+        27,
+        8,
+        2,
+        3,
+        3
+      ],
+      [
+        46,
+        91,
+        34,
+        17,
+        12,
+        5,
+        2
+      ],
+      [
+        29,
+        51,
+        65,
+        28,
+        18,
+        11,
+        5
+      ],
+      [
+        11,
+        23,
+        50,
+        38,
+        56,
+        21,
+        7
+      ],
+      [
+        8,
+        14,
+        28,
+        26,
+        61,
+        47,
+        19
+      ],
+      [
+        2,
+        4,
+        14,
+        9,
+        35,
+        83,
+        57
+      ],
+      [
+        1,
+        1,
+        1,
+        4,
+        16,
+        44,
+        93
+      ]
+    ],
+    "adjacent_accuracy": 0.7663551401869159
+  },
+  "test_metrics": {
+    "n": 1403,
+    "accuracy": 0.37633642195295797,
+    "balanced_accuracy": 0.38243107497366996,
+    "macro_precision": 0.37515669337162505,
+    "macro_recall": 0.38243107497366996,
+    "macro_f1": 0.3766926996777103,
+    "weighted_f1": 0.37211490795102076,
+    "per_class": {
+      "Teens": {
+        "precision": 0.51010101010101,
+        "recall": 0.49029126213592233,
+        "f1": 0.5,
+        "support": 206
+      },
+      "Twenties": {
+        "precision": 0.3805309734513274,
+        "recall": 0.41148325358851673,
+        "f1": 0.3954022988505747,
+        "support": 209
+      },
+      "Thirties": {
+        "precision": 0.30837004405286345,
+        "recall": 0.33816425120772947,
+        "f1": 0.3225806451612903,
+        "support": 207
+      },
+      "Forties": {
+        "precision": 0.2986111111111111,
+        "recall": 0.20476190476190476,
+        "f1": 0.24293785310734464,
+        "support": 210
+      },
+      "Fifties": {
+        "precision": 0.28078817733990147,
+        "recall": 0.27941176470588236,
+        "f1": 0.2800982800982801,
+        "support": 204
+      },
+      "Sixties": {
+        "precision": 0.37320574162679426,
+        "recall": 0.38235294117647056,
+        "f1": 0.37772397094430993,
+        "support": 204
+      },
+      "Seventies+": {
+        "precision": 0.4744897959183674,
+        "recall": 0.5705521472392638,
+        "f1": 0.5181058495821727,
+        "support": 163
+      }
+    },
+    "confusion_matrix": [
+      [
+        101,
+        55,
+        22,
+        7,
+        9,
+        8,
+        4
+      ],
+      [
+        47,
+        86,
+        43,
+        16,
+        12,
+        4,
+        1
+      ],
+      [
+        19,
+        43,
+        70,
+        34,
+        28,
+        7,
+        6
+      ],
+      [
+        14,
+        21,
+        53,
+        43,
+        38,
+        27,
+        14
+      ],
+      [
+        11,
+        15,
+        21,
+        25,
+        57,
+        51,
+        24
+      ],
+      [
+        4,
+        4,
+        14,
+        14,
+        36,
+        78,
+        54
+      ],
+      [
+        2,
+        2,
+        4,
+        5,
+        23,
+        34,
+        93
+      ]
+    ],
+    "adjacent_accuracy": 0.7419814682822523
+  },
+  "test_speaker_level_metrics": {
+    "n": 1213,
+    "accuracy": 0.36108821104699096,
+    "balanced_accuracy": 0.39263758367865786,
+    "macro_precision": 0.3537229501646778,
+    "macro_recall": 0.39263758367865786,
+    "macro_f1": 0.3613578925948801,
+    "weighted_f1": 0.356441504012076,
+    "per_class": {
+      "Teens": {
+        "precision": 0.520618556701031,
+        "recall": 0.49029126213592233,
+        "f1": 0.505,
+        "support": 206
+      },
+      "Twenties": {
+        "precision": 0.38565022421524664,
+        "recall": 0.41148325358851673,
+        "f1": 0.39814814814814814,
+        "support": 209
+      },
+      "Thirties": {
+        "precision": 0.32558139534883723,
+        "recall": 0.33816425120772947,
+        "f1": 0.33175355450236965,
+        "support": 207
+      },
+      "Forties": {
+        "precision": 0.3161764705882353,
+        "recall": 0.20476190476190476,
+        "f1": 0.24855491329479767,
+        "support": 210
+      },
+      "Fifties": {
+        "precision": 0.3313953488372093,
+        "recall": 0.27941176470588236,
+        "f1": 0.30319148936170215,
+        "support": 204
+      },
+      "Sixties": {
+        "precision": 0.2857142857142857,
+        "recall": 0.36363636363636365,
+        "f1": 0.32,
+        "support": 121
+      },
+      "Seventies+": {
+        "precision": 0.31092436974789917,
+        "recall": 0.6607142857142857,
+        "f1": 0.4228571428571429,
+        "support": 56
+      }
+    },
+    "confusion_matrix": [
+      [
+        101,
+        55,
+        22,
+        7,
+        9,
+        8,
+        4
+      ],
+      [
+        47,
+        86,
+        43,
+        16,
+        12,
+        4,
+        1
+      ],
+      [
+        19,
+        43,
+        70,
+        34,
+        28,
+        7,
+        6
+      ],
+      [
+        14,
+        21,
+        53,
+        43,
+        38,
+        27,
+        14
+      ],
+      [
+        11,
+        15,
+        21,
+        25,
+        57,
+        51,
+        24
+      ],
+      [
+        2,
+        3,
+        6,
+        9,
+        24,
+        44,
+        33
+      ],
+      [
+        0,
+        0,
+        0,
+        2,
+        4,
+        13,
+        37
+      ]
+    ]
+  },
+  "test_majority_baseline": {
+    "n": 1403,
+    "accuracy": 0.14896650035637918,
+    "balanced_accuracy": 0.14285714285714285,
+    "macro_precision": 0.021280928622339882,
+    "macro_recall": 0.14285714285714285,
+    "macro_f1": 0.03704360155973059,
+    "weighted_f1": 0.038627789794644235,
+    "per_class": {
+      "Teens": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 206
+      },
+      "Twenties": {
+        "precision": 0.14896650035637918,
+        "recall": 1.0,
+        "f1": 0.25930521091811415,
+        "support": 209
+      },
+      "Thirties": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 207
+      },
+      "Forties": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 210
+      },
+      "Fifties": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 204
+      },
+      "Sixties": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 204
+      },
+      "Seventies+": {
+        "precision": 0.0,
+        "recall": 0.0,
+        "f1": 0.0,
+        "support": 163
+      }
+    },
+    "confusion_matrix": [
+      [
+        0,
+        206,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        209,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        207,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        210,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        204,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        204,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      [
+        0,
+        163,
+        0,
+        0,
+        0,
+        0,
+        0
+      ]
+    ],
+    "predicts": "Twenties"
+  },
+  "architecture": {
+    "encoder": "facebook/hubert-base-ls960",
+    "encoder_frozen": true,
+    "layer": 5,
+    "pooling": "mean over time (padding masked)",
+    "head": "mlp",
+    "head_hyperparameters": {
+      "hidden": 512,
+      "dropout": 0.5,
+      "best_epoch": 3
+    },
+    "trainable_parameters": 397319
+  },
+  "skipped_clips": {
+    "too_short": 157,
+    "silent": 61
+  },
+  "skip_examples": [
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/44225c22a240f7f3a9febb35088b29fe81e92865349d31fd23eeecf5da11df38/en_validated_8/common_voice_en_22004833.mp3",
+      "reason": "too_short: 0.76 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/c48ae39045f9850dbd5d48f80721f617234a556ac2d45a5bb1875a8a037ff07a/en_validated_23/common_voice_en_18170075.mp3",
+      "reason": "too_short: 0.92 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/fc6c26a00f60bf17ce29336d999b45f6ad5ac79f2eea8c5784f8746f197bc5a7/en_validated_27/common_voice_en_204237.mp3",
+      "reason": "too_short: 0.56 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/0aa728517edc8011a6310ea9d39e5011ab47ab51e5c50a505091d0d2163fe961/en_validated_1/common_voice_en_27396612.mp3",
+      "reason": "silent: -50 dBFS"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/44225c22a240f7f3a9febb35088b29fe81e92865349d31fd23eeecf5da11df38/en_validated_8/common_voice_en_22171315.mp3",
+      "reason": "too_short: 0.62 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/e1e84e6fb646fba40eedc0b439e46ca7314906f685ccee8fefab61126f395626/en_validated_11/common_voice_en_676261.mp3",
+      "reason": "silent: -53 dBFS"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/f935eb2ec0c7d29c65d26c7ce96bdc33183fe96bcdef657fe06f55570b947ed2/en_validated_12/common_voice_en_22196326.mp3",
+      "reason": "too_short: 0.54 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/3f2d685e3fe8d13a7a94f86e9798cda67bbbff163cc128375c0f67cb67170606/en_validated_10/common_voice_en_22006959.mp3",
+      "reason": "too_short: 0.78 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/be046c1847a2f62ac7b41e0b9973d3b283b876b951e5e460a7e4669fe424b8dd/en_validated_0/common_voice_en_22151383.mp3",
+      "reason": "too_short: 0.52 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/05c40c01a488acb92276a72b1a5547a8d5b416ea0fc84471c904ce7d444fc004/en_validated_7/common_voice_en_17356651.mp3",
+      "reason": "too_short: 0.92 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/9749173b0ca1b44796d507bf5920c49d05af2700784cd44d61a2b54c3f01fa38/en_validated_9/common_voice_en_24700116.mp3",
+      "reason": "silent: -50 dBFS"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/44225c22a240f7f3a9febb35088b29fe81e92865349d31fd23eeecf5da11df38/en_validated_8/common_voice_en_26949673.mp3",
+      "reason": "silent: -51 dBFS"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/44225c22a240f7f3a9febb35088b29fe81e92865349d31fd23eeecf5da11df38/en_validated_8/common_voice_en_22046996.mp3",
+      "reason": "too_short: 0.76 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/e1e84e6fb646fba40eedc0b439e46ca7314906f685ccee8fefab61126f395626/en_validated_11/common_voice_en_596102.mp3",
+      "reason": "too_short: 0.94 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/44225c22a240f7f3a9febb35088b29fe81e92865349d31fd23eeecf5da11df38/en_validated_8/common_voice_en_22193434.mp3",
+      "reason": "too_short: 0.74 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/3f70ebfe5ff9de9cc6144f15ee788cd61fda1d73d5e2bdc4b86a4d14b51c39fd/en_validated_4/common_voice_en_598810.mp3",
+      "reason": "silent: -55 dBFS"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/be046c1847a2f62ac7b41e0b9973d3b283b876b951e5e460a7e4669fe424b8dd/en_validated_0/common_voice_en_17298824.mp3",
+      "reason": "silent: -50 dBFS"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/757bdc1bd360035517d280ace8431d70699c4b2f8c983596c6f5b7facb6639e4/en_validated_16/common_voice_en_21908150.mp3",
+      "reason": "too_short: 0.76 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/9749173b0ca1b44796d507bf5920c49d05af2700784cd44d61a2b54c3f01fa38/en_validated_9/common_voice_en_22120260.mp3",
+      "reason": "too_short: 0.48 s < 1.0 s"
+    },
+    {
+      "path": "/home/patrickli/.cache/huggingface/datasets/downloads/extracted/f340ba5cec56e03f55a86a969951a89aa380b9a1873edff111a86f7c3eae094c/en_validated_14/common_voice_en_210811.mp3",
+      "reason": "too_short: 0.90 s < 1.0 s"
+    }
+  ],
+  "download_bytes": 0
+}
