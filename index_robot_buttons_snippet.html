@@ -1,0 +1,55 @@
+<!-- Optional buttons to add inside templates/index.html -->
+<div style="padding: 12px; border: 1px solid #ccc; margin: 10px 0;">
+  <h3>Robot BLE Control</h3>
+  <button onclick="scanRobot()">Scan Robot</button>
+  <select id="robotDevice"></select>
+  <input id="writeIndex" value="0" style="width:40px;" />
+  <button onclick="connectRobot()">Connect Robot</button>
+  <button onclick="fetch('/robot/home').then(r=>r.json()).then(alertJson)">Home</button>
+  <button onclick="fetch('/robot/stop').then(r=>r.json()).then(alertJson)">STOP</button>
+
+  <h3>Manual Emotion Trigger - No TensorFlow Mode</h3>
+  <button onclick="setEmotion('happy')">Happy + Robot</button>
+  <button onclick="setEmotion('angry')">Angry + Robot</button>
+  <button onclick="setEmotion('neutral')">Neutral + Robot</button>
+  <button onclick="setEmotion('sad')">Sad + Robot</button>
+</div>
+
+<script>
+function alertJson(data) {
+  alert(JSON.stringify(data, null, 2));
+}
+
+async function scanRobot() {
+  const res = await fetch('/robot/scan');
+  const data = await res.json();
+  const select = document.getElementById('robotDevice');
+  select.innerHTML = '';
+  if (!data.ok) {
+    alertJson(data);
+    return;
+  }
+  data.devices.forEach(d => {
+    const opt = document.createElement('option');
+    opt.value = d.address;
+    opt.textContent = `${d.name} | ${d.address} | RSSI:${d.rssi}`;
+    select.appendChild(opt);
+  });
+}
+
+async function connectRobot() {
+  const address = document.getElementById('robotDevice').value;
+  const writeIndex = parseInt(document.getElementById('writeIndex').value || '0');
+  const res = await fetch('/robot/connect', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ address: address, write_index: writeIndex })
+  });
+  alertJson(await res.json());
+}
+
+async function setEmotion(emotion) {
+  const res = await fetch(`/set_emotion/${emotion}`);
+  alertJson(await res.json());
+}
+</script>

@@ -1,0 +1,13 @@
+# Python 3.12 - Flask + OpenCV camera + BLE xArm robot
+flask
+opencv-python<5       # app.py uses cv2.CascadeClassifier, which OpenCV 5 no longer provides
+numpy
+bleak
+
+# Live voice emotion from tone of voice (emotion_detector.py)
+torch>=2.6              # 2.6+ is required by transformers to load the model's .bin weights
+transformers>=4.40,<5   # pretrained HuBERT emotion model: superb/hubert-base-superb-er
+sounddevice>=0.5        # microphone capture (PortAudio is bundled in the Windows wheel)
+silero-vad>=5.1         # voice activity detection (model file ships inside the package; pulls in torchaudio)
+imageio-ffmpeg>=0.5     # bundles a portable ffmpeg binary to pull the audio track out of an uploaded
+                        # video file for the same tone-of-voice model (no system ffmpeg/PATH needed)

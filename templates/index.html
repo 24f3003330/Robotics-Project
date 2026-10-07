@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Emotion Music + xArm Robot Demo</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f4f6f8;
+      transition: background-color 0.6s ease;
+    }
+    header {
+      background: #101828;
+      color: white;
+      padding: 16px 24px;
+      text-align: center;
+    }
+    .container {
+      max-width: 1180px;
+      margin: 20px auto;
+      padding: 0 16px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1.2fr 1fr;
+      gap: 18px;
+    }
+    .card {
+      background: white;
+      border-radius: 12px;
+      padding: 16px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+      margin-bottom: 18px;
+    }
+    .video-box {
+      text-align: center;
+    }
+    #videoFeed, #testVideoPreview {
+      width: 100%;
+      max-width: 720px;
+      border-radius: 10px;
+      border: 2px solid #d0d5dd;
+      background: #000;
+    }
+    /* Visible black box even before the first frame arrives (or if a frame
+       fetch ever fails) instead of collapsing to nothing, which is what an
+       <img> with no intrinsic size and no src does. */
+    #videoFeed { min-height: 360px; object-fit: contain; display: block; }
+    .video-wrap { overflow: visible; }
+    #cameraStatusMessage {
+      margin-top: 8px;
+      padding: 10px 12px;
+      border-radius: 8px;
+      background: #fef2f2;
+      color: #991b1b;
+      text-align: left;
+      font-weight: 600;
+    }
+    .pill-ok { background: #dcfce7; color: #166534; }
+    .pill-bad { background: #fee2e2; color: #991b1b; }
+    .pill-warn { background: #fef9c3; color: #854d0e; }
+    button {
+      border: none;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 5px;
+      cursor: pointer;
+      font-weight: 600;
+      background: #2563eb;
+      color: white;
+    }
+    button.secondary { background: #475467; }
+    button.danger { background: #dc2626; }
+    button.success { background: #16a34a; }
+    button.warning { background: #f97316; }
+    select, input {
+      padding: 9px;
+      margin: 5px;
+      border-radius: 8px;
+      border: 1px solid #cbd5e1;
+    }
+    .status {
+      font-size: 18px;
+      font-weight: 700;
+      color: #101828;
+      margin-top: 8px;
+    }
+    .small {
+      color: #475467;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .pill {
+      display: inline-block;
+      padding: 6px 10px;
+      border-radius: 999px;
+      background: #e0f2fe;
+      color: #075985;
+      font-weight: 700;
+      margin: 4px;
+    }
+    .row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+    }
+    audio {
+      width: 100%;
+      margin-top: 10px;
+    }
+    .voice-bars {
+      margin: 12px 0;
+      transition: opacity 0.3s ease;
+    }
+    .voice-bars.idle { opacity: 0.45; }
+    .voice-bar-row {
+      display: grid;
+      grid-template-columns: 70px 1fr 48px;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 0;
+      font-weight: 600;
+      color: #101828;
+    }
+    .voice-bar-track {
+      height: 16px;
+      background: #eef2f6;
+      border-radius: 999px;
+      overflow: hidden;
+    }
+    .voice-bar-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 999px;
+      transition: width 0.35s ease;
+    }
+    .voice-bar-pct {
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+    .source-line { margin-top: 4px; }
+
+    .voice-error { color: #b42318; }
+    .voice-warning { color: #b54708; }
+    @media (max-width: 900px) {
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>AI Emotion Music + xArm Robot Bottle Pick Demo</h1>
+    <div class="small">Python 3.12 friendly: OpenCV + Flask + BLE Robot Control</div>
+  </header>
+
+  <div class="small" id="connectionError"
+       style="display:none;background:#fee2e2;color:#991b1b;padding:10px 16px;font-weight:600;"></div>
+
+  <div class="container">
+    <div class="grid">
+      <div class="card video-box">
+        <h2>Live Camera</h2>
+        <div class="small" style="margin-bottom:6px;">
+          Camera status: <span class="pill" id="cameraStatusPill">● -</span>
+        </div>
+        <div class="video-wrap">
+          <!-- No static src: JS polls /video_frame and swaps this in (see
+               CameraFeed below). A hard-coded multipart/x-mixed-replace src
+               here rendered nothing at all in Safari - the stream itself was
+               verified correct with curl, but Safari/WebKit does not
+               reliably render that content type in an <img>. -->
+          <img id="videoFeed" alt="Live camera feed" />
+          <div class="small" id="cameraStatusMessage" style="display:none;"></div>
+        </div>
+        <div class="small" style="margin-top:6px;">
+          Detection source: <b id="detectionSource">-</b> &nbsp;·&nbsp;
+          Detection status: <b id="detectionStatus">-</b>
+        </div>
+        <div class="status" id="finalEmotionStatus">Final Emotion: Detecting...</div>
+        <div class="small">
+          Decided by: <b id="finalSource">-</b> &nbsp;·&nbsp; Confidence: <b id="finalConfidence">-</b>
+        </div>
+        <div class="small source-line">
+          Face raw: <b id="faceEmotion">-</b> &nbsp;·&nbsp;
+          Face locked: <b id="faceLocked">-</b>
+        </div>
+        <div class="small">
+          Voice raw: <b id="voiceRawMirror">-</b> &nbsp;·&nbsp;
+          Voice stable: <b id="voiceStableMirror">-</b> &nbsp;·&nbsp;
+          Manual: <b id="manualEmotion">-</b>
+        </div>
+        <div>
+          <span class="pill" id="robotConnected">Robot: Unknown</span>
+          <span class="pill" id="robotBusy">Busy: Unknown</span>
+          <span class="pill" id="poseKey">Pose: -</span>
+        </div>
+        <div class="small">Robot last action: <b id="finalLastAction">-</b></div>
+        <p class="small">
+          Fusion priority: <b>manual &gt; voice &gt; face</b>. The face prediction stays raw:
+          it is never rewritten to match the voice, and it can never replace a newer voice result.
+        </p>
+        <div class="small" style="margin-top:10px;">
+          <b>Mood music</b> (played for the final emotion). Use this player's own
+          controls to pause/mute it.
+        </div>
+        <audio id="musicPlayer" controls preload="none"></audio>
+        <div class="small" id="musicError" style="color:#b42318;"></div>
+      </div>
+
+      <div>
+        <div class="card">
+          <h2>Upload Audio / Video</h2>
+          <p class="small">
+            Upload a clip to test emotion detection without the live webcam.
+            <b>Video</b> (mp4, webm, mov, mkv, avi) also becomes the camera source for face
+            detection; <b>audio</b> (wav, mp3, m4a, aac, flac, ogg, opus) is analysed for
+            voice emotion only and leaves the camera alone.
+          </p>
+          <div class="row">
+            <input type="file" id="videoFile"
+                   accept=".mp4,.webm,.mov,.mkv,.avi,.wav,.mp3,.m4a,.aac,.flac,.ogg,.opus,audio/*,video/*" />
+            <button id="btnUpload" onclick="uploadVideo()">Upload</button>
+          </div>
+          <div class="small" id="uploadError" style="color:#b42318;"></div>
+          <div class="row">
+            <label class="small" for="videoSelect">Uploaded files</label>
+            <select id="videoSelect" style="min-width:220px;"></select>
+            <button class="secondary" onclick="loadVideoList()">Refresh</button>
+          </div>
+          <div class="row">
+            <button class="success" onclick="useSelectedVideo()">Analyse Selected File</button>
+            <button class="warning" onclick="useWebcam()">Back to Live Webcam</button>
+          </div>
+          <div class="small">Current source: <b id="currentVideoSource">-</b></div>
+          <div class="small">Selected file: <b id="selectedVideoFile">-</b></div>
+
+          <!-- One element per media type, and only ever ONE of them holds a src
+               at a time (see AudioBus.showPreview). Both are registered with the
+               AudioBus so the global MUTE reaches them. -->
+          <video id="testVideoPreview" controls playsinline preload="metadata"
+                 style="display:none; margin-top:10px;"></video>
+          <audio id="testAudioPreview" controls preload="none"
+                 style="display:none; margin-top:10px;"></audio>
+          <div class="small" id="previewHint" style="display:none;">
+            Press play to hear this clip. The mood music pauses while it plays, so only
+            one sound is ever audible.
+          </div>
+
+          <div class="small" style="margin-top:8px;">
+            <b>Uploaded file audio analysis</b> (acoustic tone, same model and the same
+            speech gating as Live Voice Emotion). On completion this result competes for
+            <b>Final Emotion</b> exactly like live voice does (manual &gt; voice &gt; face),
+            and - unlike the live microphone's 20s freshness window - stays pinned as the
+            voice result for as long as this file stays selected, until you pick another
+            file or go back to the webcam. Watch the Live Camera card's "Final Emotion" and
+            "Decided by" fields above.
+          </div>
+          <div class="small">
+            Status: <b id="uploadAnalysisStatus">idle</b>
+          </div>
+          <div class="small">
+            Result: <b id="uploadAnalysisResult">-</b>
+          </div>
+          <div class="small" id="uploadAnalysisError" style="color:#b42318;"></div>
+          <details class="small" id="uploadEnsembleBox" style="display:none;margin-top:6px;">
+            <summary style="cursor:pointer;">Per-model breakdown for this file</summary>
+            <div id="uploadEnsembleMembers" style="margin-top:4px;font-family:monospace;
+                 font-size:11px;line-height:1.5;"></div>
+          </details>
+        </div>
+
+        <div class="card">
+          <h2>Detection Control</h2>
+          <button onclick="resetDetection()">Reset Detection</button>
+          <button class="secondary" onclick="stopDetection()">Pause Detection</button>
+          <button class="success" onclick="resumeDetection()">Resume Detection</button>
+          <p class="small">
+            In no-TensorFlow mode, automatic camera detection mainly gives <b>Happy</b> and <b>Neutral</b>.
+            Use manual emotion buttons below for reliable demo of Angry and Sad robot actions.
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>Manual Emotion Trigger</h2>
+          <button onclick="setEmotion('happy')">Happy → 30° Right Bottle</button>
+          <button class="danger" onclick="setEmotion('angry')">Angry → 60° Right Bottle</button>
+          <button class="secondary" onclick="setEmotion('neutral')">Neutral → 30° Left Bottle</button>
+          <button class="warning" onclick="setEmotion('sad')">Sad → 60° Left Bottle</button>
+          <div class="row">
+            <button class="secondary" onclick="clearManual()">Clear Manual Override</button>
+          </div>
+          <p class="small">
+            A manual emotion outranks voice and face for 30 s, then expires on its own.
+            Clearing it hands the final emotion straight back to voice (or face).
+          </p>
+        </div>
+
+        <div class="card">
+          <h2>Live Voice Emotion</h2>
+          <p class="small">
+            Listens to the <b>tone of voice</b> through the computer microphone.
+            No speech-to-text is used: the words themselves are ignored.
+          </p>
+          <div class="row">
+            <label class="small" for="voiceDevice">Microphone</label>
+            <select id="voiceDevice" style="min-width:220px;"><option value="">System default</option></select>
+            <button class="secondary" onclick="loadVoiceDevices()">Refresh</button>
+          </div>
+          <div class="row">
+            <button id="btnStartVoice" class="success" onclick="startVoice()">Start Listening</button>
+            <button id="btnStopVoice" class="danger" style="display:none" onclick="stopVoice()">Stop Listening</button>
+          </div>
+
+          <div class="voice-bars idle" id="voiceBars">
+            <div class="voice-bar-row">
+              <span>Happy</span>
+              <div class="voice-bar-track"><div class="voice-bar-fill" id="bar-happy" style="background:#f59e0b"></div></div>
+              <span class="voice-bar-pct" id="pct-happy">0%</span>
+            </div>
+            <div class="voice-bar-row">
+              <span>Angry</span>
+              <div class="voice-bar-track"><div class="voice-bar-fill" id="bar-angry" style="background:#dc2626"></div></div>
+              <span class="voice-bar-pct" id="pct-angry">0%</span>
+            </div>
+            <div class="voice-bar-row">
+              <span>Sad</span>
+              <div class="voice-bar-track"><div class="voice-bar-fill" id="bar-sad" style="background:#4f46e5"></div></div>
+              <span class="voice-bar-pct" id="pct-sad">0%</span>
+            </div>
+            <div class="voice-bar-row">
+              <span>Neutral</span>
+              <div class="voice-bar-track"><div class="voice-bar-fill" id="bar-neutral" style="background:#0ea5e9"></div></div>
+              <span class="voice-bar-pct" id="pct-neutral">0%</span>
+            </div>
+          </div>
+
+          <div class="status" id="voiceEmotion">Detected Emotion (raw): -</div>
+          <div class="small">Confidence: <b id="voiceConfidence">-</b></div>
+          <div class="small">Stable emotion (debounced, used by fusion): <b id="voiceStable">-</b>
+            &nbsp;(confident speech <span id="voiceStreak">0.0s/2.0s</span>)</div>
+          <div class="small">Live predictions: <b id="voicePredictions">0</b>
+            &nbsp;·&nbsp; last <span id="voicePredictionAge">-</span>
+            &nbsp;·&nbsp; buffered <span id="voiceBuffered">-</span></div>
+          <div class="small">Face raw: <b id="voiceFaceMirror">-</b> &nbsp;·&nbsp;
+            Manual: <b id="voiceManualMirror">-</b></div>
+          <div class="status" id="voiceFinalLine">Final emotion (used by the robot): <b id="voiceFinalEmotion">-</b>
+            <span id="voiceFinalSource"></span></div>
+          <div class="small">Speech detected: <b id="voiceSpeech">No</b> &nbsp;·&nbsp; Microphone: <b id="voiceMic">Stopped</b></div>
+          <div class="small">Robot trigger: <b id="voiceRobotMode">-</b> &nbsp;·&nbsp; Last action: <span id="voiceLastAction">-</span></div>
+          <div class="small voice-warning" id="voiceWarning"></div>
+          <!-- Ensemble debugging. Hidden entirely when a single model is running,
+               so the panel looks exactly as it did before the ensemble existed. -->
+          <details class="small" id="voiceEnsembleBox" style="display:none;margin-top:6px;">
+            <summary style="cursor:pointer;">Ensemble: <b id="voiceEnsembleSummary">-</b></summary>
+            <div id="voiceEnsembleMembers" style="margin-top:4px;font-family:monospace;
+                 font-size:11px;line-height:1.5;"></div>
+          </details>
+          <div class="small voice-error" id="voiceError"></div>
+        </div>
+
+        <div class="card">
+          <h2>Robot BLE Control</h2>
+          <div class="row">
+            <button onclick="scanRobot()">Scan Robot</button>
+            <select id="robotDevice" style="min-width:300px;"></select>
+            <label>Write Index</label>
+            <input id="writeIndex" value="0" style="width:50px;" />
+          </div>
+          <div class="row">
+            <button class="success" onclick="connectRobot()">Connect</button>
+            <button class="secondary" onclick="disconnectRobot()">Disconnect</button>
+            <button onclick="robotHome()">Home</button>
+            <button class="danger" onclick="robotStop()">STOP</button>
+          </div>
+          <div class="row">
+            <button onclick="runRobot('happy')">Run Happy</button>
+            <button onclick="runRobot('angry')">Run Angry</button>
+            <button onclick="runRobot('neutral')">Run Neutral</button>
+            <button onclick="runRobot('sad')">Run Sad</button>
+          </div>
+          <pre id="robotOutput" class="small"></pre>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+// ============================================================================
+// AUDIO BUS - the single owner of every sound this page can make
+// ----------------------------------------------------------------------------
+// Before this existed there were two uncoordinated media elements (the mood
+// music player and the uploaded-clip preview). Both could play at once, and the
+// <audio controls> mute only ever reached the element it belonged to, so the
+// other path kept playing - that is the "I can hear it twice / mute does not
+// work" problem.
+//
+// Rules enforced here, in ONE place:
+//   1. Every media element the app creates is registered with the bus.
+//   2. At most one registered element is audible at any moment. Starting one
+//      pauses the others, so two sounds can never overlap.
+//   3. ONE global mute applies to every registered element, now and to any
+//      element registered later. Unmute restores the previous playback.
+//   4. Only one browser tab is allowed to make sound (localStorage leader
+//      lock), so opening the app twice cannot double the audio either.
+// ============================================================================
+const AudioBus = (function () {
+  const elements = [];            // every media element the app owns
+  let muted = false;
+  let activeId = null;            // which element is currently allowed to sound
+  let wasLeader = false;
+
+  // ---- cross-tab leader lock (a second tab is a second copy of every element)
+  const TAB_ID = (window.crypto && crypto.randomUUID) ? crypto.randomUUID() : String(Math.random());
+  const LEADER_KEY = 'emotionAppAudioLeader';
+  const LEADER_TTL_MS = 3000;
+
+  function claimLeaderIfFree() {
+    try {
+      const raw = localStorage.getItem(LEADER_KEY);
+      const leader = raw ? JSON.parse(raw) : null;
+      if (!leader || (Date.now() - leader.ts) > LEADER_TTL_MS || leader.id === TAB_ID) {
+        localStorage.setItem(LEADER_KEY, JSON.stringify({ id: TAB_ID, ts: Date.now() }));
+      }
+    } catch (e) { /* private mode: every tab behaves as leader */ }
+  }
+
+  function isLeader() {
+    try {
+      const raw = localStorage.getItem(LEADER_KEY);
+      return raw ? JSON.parse(raw).id === TAB_ID : true;
+    } catch (e) { return true; }
+  }
+
+  function apply() {
+    // Single place that decides what each element is allowed to do.
+    //
+    // The ACTIVE element's own pause/play/mute state is left entirely to the
+    // user (native player controls) - this function only ever forces it
+    // muted when the bus-level `muted` flag is on. It must NEVER force it
+    // back to unmuted or force-resume playback: this ran on every poll tick
+    // (every 0.5-1s) and previously reset el.muted=false and called
+    // .play() again whenever it saw the element paused, which meant clicking
+    // the native pause or mute button got silently undone within a second.
+    //
+    // Every OTHER element (not currently active) still gets force-muted and
+    // paused here - that is the actual "only one audible source" guarantee,
+    // and it is safe to keep re-asserting since the user has no reason to be
+    // interacting with an element that isn't the one playing.
+    const leader = isLeader();
+    elements.forEach(entry => {
+      const el = entry.el;
+      const isActive = leader && entry.id === activeId;
+      if (isActive) {
+        if (muted) el.muted = true;
+      } else {
+        el.muted = true;
+        if (!el.paused) el.pause();
+      }
+    });
+    render();
+    return leader;
+  }
+
+  function render() {
+    // No visible mute/audio-source indicator in the UI any more (the status
+    // bar that showed one was removed) - mute state itself still lives in
+    // `muted` above and is still enforced on every registered element by
+    // apply(). Each media element's own native controls show its state.
+  }
+
+  function register(el, id, label) {
+    if (!el || elements.some(e => e.id === id)) return;
+    elements.push({ el, id, label });
+    // Taking over an element means taking over its PLAY event too: if the user
+    // presses the element's own native play button, that element becomes the
+    // single audible one and everything else stops. This is what makes the
+    // native controls safe to keep.
+    el.addEventListener('play', () => {
+      if (muted || !isLeader()) { el.pause(); return; }
+      activeId = id;
+      apply();
+    });
+    el.addEventListener('pause', render);
+    el.addEventListener('ended', render);
+    el.addEventListener('volumechange', render);
+    el.muted = muted || id !== activeId;
+  }
+
+  function play(id, src) {
+    const entry = elements.find(e => e.id === id);
+    if (!entry) return;
+
+    // renderEmotion() calls AudioBus.play('music', ...) on almost every status
+    // poll (about once a second) as long as the fused emotion has a song -
+    // not just when the song actually changes. Without this guard that call
+    // steals `activeId` back from a preview clip the user just pressed play
+    // on, which gets muted+paused by apply() a moment later: the clip would
+    // play for under a second and then silently stop. A currently-playing
+    // preview was started by an explicit user click (the native 'play'
+    // listener below) and must keep priority until it pauses/ends on its own.
+    if (id !== activeId) {
+      const current = elements.find(e => e.id === activeId);
+      if (current && !current.el.paused && current.id.startsWith('preview')) {
+        return;
+      }
+    }
+
+    claimLeaderIfFree();
+    const leader = isLeader();
+    const justBecameLeader = leader && !wasLeader;
+    wasLeader = leader;
+
+    if (!leader) { entry.el.pause(); render(); return; }
+
+    const changed = src && entry.el.getAttribute('src') !== src;
+    if (changed) entry.el.setAttribute('src', src);
+    activeId = id;
+    apply();
+    if (muted) return;                       // stay silent, but keep the source loaded
+    // Only start playback ourselves for a reason WE caused: a new song, or
+    // just having become the audio leader. This is called again on every
+    // status poll (every 0.5-1s) as long as the same emotion holds, so it
+    // must NOT auto-resume just because the element happens to be paused -
+    // that overrode the user's own pause button within a second of pressing
+    // it. A user-initiated pause is respected and stays paused.
+    if (changed || justBecameLeader) {
+      entry.el.play().catch(() => { /* autoplay blocked until the user interacts */ });
+    }
+  }
+
+  function stop(id) {
+    const entry = elements.find(e => e.id === id);
+    if (!entry) return;
+    entry.el.pause();
+    if (activeId === id) activeId = null;
+    render();
+  }
+
+  function toggleMute() {
+    muted = !muted;
+    const leader = apply();
+    // apply() only ever forces the active element muted, never unmuted (see
+    // its comment), so unmuting has to be done explicitly here.
+    const entry = activeId && elements.find(e => e.id === activeId);
+    if (!muted && leader && entry) {
+      entry.el.muted = false;
+      if (entry.el.getAttribute('src')) entry.el.play().catch(() => {});
+    }
+    console.log('[AUDIO] mute =', muted);
+    return muted;
+  }
+
+  claimLeaderIfFree();
+  setInterval(() => { claimLeaderIfFree(); apply(); }, 1000);
+  window.addEventListener('beforeunload', () => {
+    try { if (isLeader()) localStorage.removeItem(LEADER_KEY); } catch (e) {}
+    elements.forEach(e => e.el.pause());
+  });
+
+  return {
+    register, play, stop, toggleMute, render,
+    isMuted: () => muted,
+    activeId: () => activeId,
+  };
+})();
+
+// ============================================================================
+// CAMERA FEED - polled single frames, not the multipart/x-mixed-replace <img>
+// ----------------------------------------------------------------------------
+// ROOT CAUSE this replaces: the server's MJPEG stream (/video_feed) was
+// verified correct with curl (real JPEG frames, correct boundaries, correct
+// Content-Type), but a plain <img src="/video_feed"> rendered nothing at all
+// in Safari. Safari/WebKit does not reliably support multipart/x-mixed-replace
+// in an <img> - Chrome and Firefox do, Safari does not. Fetching one JPEG per
+// request and swapping it in via an object URL is not multipart-specific, so
+// it renders identically in every browser.
+// ============================================================================
+const CameraFeed = (function () {
+  const img = document.getElementById('videoFeed');
+  let currentUrl = null;
+  let inFlight = false;
+  let timer = null;
+  let failures = 0;
+
+  async function tick() {
+    if (inFlight) return;          // never let two frame fetches overlap
+    inFlight = true;
+    try {
+      const res = await fetch('/video_frame', { cache: 'no-store' });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      img.src = url;
+      // Revoke the PREVIOUS object URL only after the new one is assigned,
+      // so the browser is never asked to paint a revoked URL.
+      if (currentUrl) URL.revokeObjectURL(currentUrl);
+      currentUrl = url;
+      failures = 0;
+    } catch (e) {
+      failures++;
+      if (failures === 5) console.log('[CAMERA] /video_frame failing:', e);
+    } finally {
+      inFlight = false;
+    }
+  }
+
+  function start(intervalMs) {
+    stop();
+    tick();
+    timer = setInterval(tick, intervalMs || 100);   // ~10 fps
+  }
+
+  function stop() {
+    if (timer) { clearInterval(timer); timer = null; }
+  }
+
+  return { start, stop };
+})();
+
+const musicPlayer = document.getElementById('musicPlayer');
+const testVideoPreview = document.getElementById('testVideoPreview');
+const testAudioPreview = document.getElementById('testAudioPreview');
+
+AudioBus.register(musicPlayer, 'music', 'mood music');
+AudioBus.register(testVideoPreview, 'preview', 'uploaded clip');
+AudioBus.register(testAudioPreview, 'preview-audio', 'uploaded clip');
+
+musicPlayer.addEventListener('error', () => {
+  // A missing/unplayable song used to fail completely silently.
+  const src = musicPlayer.getAttribute('src');
+  text('musicError', src ? 'Could not play ' + src : '');
+});
+
+// ============================================================================
+// EMOTION STORE - the single authoritative emotion state
+// ----------------------------------------------------------------------------
+// ROOT CAUSE this replaces: /status and /voice/status are two endpoints, polled
+// by two loops, each taking its own snapshot of the fused emotion at a
+// different instant, and each rendering its own copy into a different part of
+// the page. When fusion changed between the two snapshots the camera card and
+// the voice card legitimately showed different emotions (ANGRY here, HAPPY
+// there). Both now feed this ONE store, and the store refuses any payload whose
+// server-side state_seq is older than what is already displayed, so an older
+// inference can never overwrite a newer one no matter which endpoint or in
+// what order it arrives.
+// ============================================================================
+const EmotionState = {
+  emotion: null,
+  source: null,
+  confidence: 0,
+  stateSeq: -1,
+  poseKey: '-',
+  background: '#ffffff',
+  song: '',
+  lastAction: null,
+  updatedAt: 0,
+};
+
+function applyEmotionState(payload) {
+  const seq = Number(payload.state_seq);
+  if (!Number.isFinite(seq)) return false;         // malformed response: ignore
+  if (seq < EmotionState.stateSeq) {
+    console.log('[UI] dropped stale emotion state', seq, '<', EmotionState.stateSeq);
+    return false;
+  }
+  EmotionState.stateSeq = seq;
+  EmotionState.emotion = payload.emotion || null;
+  EmotionState.source = payload.source || null;
+  EmotionState.confidence = Number(payload.confidence) || 0;
+  if (payload.pose_key !== undefined) EmotionState.poseKey = payload.pose_key;
+  if (payload.background !== undefined) EmotionState.background = payload.background;
+  if (payload.song !== undefined) EmotionState.song = payload.song;
+  if (payload.last_action !== undefined) EmotionState.lastAction = payload.last_action;
+  EmotionState.updatedAt = Date.now();
+  renderEmotion();
+  return true;
+}
+
+// EVERY emotion readout on the page is written here, from the one store, so two
+// of them can never disagree.
+function renderEmotion() {
+  const e = EmotionState.emotion;
+  const label = e ? e.toUpperCase() : null;
+  const isDefault = EmotionState.source === 'default';
+  const confText = (!e || isDefault)
+    ? (e ? 'n/a (nothing detected yet)' : '-')
+    : Math.round(EmotionState.confidence * 100) + '%';
+
+  text('finalEmotionStatus', 'Final Emotion: ' + (label || 'Detecting...'));
+  text('finalSource', EmotionState.source || '-');
+  text('finalConfidence', confText);
+  text('poseKey', 'Pose: ' + (EmotionState.poseKey || '-'));
+  text('finalLastAction', EmotionState.lastAction ? EmotionState.lastAction.action : '-');
+
+  // The voice card's "final" readout is the SAME store, not a second fetch.
+  text('voiceFinalEmotion', label || '-');
+  text('voiceFinalSource', EmotionState.source ? '(from ' + EmotionState.source + ')' : '');
+  text('voiceLastAction', EmotionState.lastAction ? EmotionState.lastAction.action : '-');
+
+  if (e && !isDefault) {
+    if (EmotionState.background) document.body.style.backgroundColor = EmotionState.background;
+    if (EmotionState.song) {
+      AudioBus.play('music', EmotionState.song);
+    } else {
+      AudioBus.stop('music');
+    }
+  }
+}
+
+function text(id, value) {
+  const el = document.getElementById(id);
+  if (el) el.textContent = value;
+}
+
+function showRobotOutput(data) {
+  document.getElementById('robotOutput').textContent = JSON.stringify(data, null, 2);
+}
+
+// ---- network error surfacing (never fail silently) -------------------------
+let consecutiveNetworkErrors = 0;
+
+function noteNetworkOk() {
+  consecutiveNetworkErrors = 0;
+  document.getElementById('connectionError').style.display = 'none';
+}
+
+function noteNetworkError(what, err) {
+  consecutiveNetworkErrors++;
+  console.log('[NET]', what, err);
+  if (consecutiveNetworkErrors >= 3) {
+    const el = document.getElementById('connectionError');
+    el.textContent = 'Lost contact with the server (' + what + '). Is the Python app still running?';
+    el.style.display = 'block';
+  }
+}
+
+async function getJSON(url, options) {
+  const res = await fetch(url, options);
+  const body = await res.text();
+  let data;
+  try {
+    data = JSON.parse(body);
+  } catch (e) {
+    throw new Error('Server sent a malformed response (HTTP ' + res.status + ')');
+  }
+  if (!res.ok && data.error === undefined) {
+    throw new Error('Server error (HTTP ' + res.status + ')');
+  }
+  return data;
+}
+
+// ============================================================================
+// STATUS POLLING - one scheduler, one request of each kind in flight
+// ============================================================================
+const CAMERA_STATUS_DISPLAY = {
+  starting:  { label: 'STARTING',  cls: 'pill-warn' },
+  connected: { label: 'CONNECTED', cls: 'pill-ok' },
+  denied:    { label: 'DENIED',    cls: 'pill-bad' },
+  error:     { label: 'ERROR',     cls: 'pill-bad' },
+  stopped:   { label: 'STOPPED',   cls: 'pill-warn' },
+};
+
+function renderCameraStatus(data) {
+  const cam = data.camera_status || {};
+  const state = data.detection_active ? (cam.state || 'starting') : 'stopped';
+  const display = CAMERA_STATUS_DISPLAY[state] || { label: (state || '-').toUpperCase(), cls: '' };
+
+  const pill = document.getElementById('cameraStatusPill');
+  pill.textContent = '● ' + display.label;
+  pill.className = 'pill ' + display.cls;
+
+  // Driven by /status independently of the MJPEG <img>, so the real reason is
+  // still shown even when the stream itself is blank.
+  const msg = document.getElementById('cameraStatusMessage');
+  if (state === 'denied' || state === 'error') {
+    msg.textContent = cam.detail || 'Camera is not available.';
+    msg.style.display = 'block';
+  } else {
+    msg.style.display = 'none';
+  }
+}
+
+function renderDetectionSourceStatus(data) {
+  const videoSrc = data.video_source || {};
+  const upload = data.upload_analysis || {};
+  const source0 = EmotionState.source;
+
+  let source = '-', status = '-';
+  if (source0 === 'manual') {
+    source = 'MANUAL'; status = 'ACTIVE';
+  } else if (source0 === 'voice') {
+    source = 'VOICE'; status = 'LISTENING';
+  } else if (source0 === 'face') {
+    source = videoSrc.is_webcam ? 'LIVE CAMERA' : 'UPLOADED VIDEO';
+    status = data.detection_active ? 'RUNNING' : 'PAUSED';
+  } else {
+    source = 'NONE'; status = 'nothing detected yet';
+  }
+  const processing = upload.status === 'processing';
+  if (processing) status = 'PROCESSING (audio analysis)';
+
+  text('detectionSource', source);
+  text('detectionStatus', status);
+}
+
+function renderStatus(data) {
+  const face = data.face || {};
+  const voice = data.voice || {};
+  const manual = data.manual || {};
+  const final = data.final || {};
+
+  // The fused emotion goes through the ONE store (sequence-checked).
+  applyEmotionState({
+    state_seq: data.state_seq,
+    emotion: final.emotion,
+    source: final.source,
+    confidence: final.confidence,
+    pose_key: data.robot_pose_key,
+    background: data.background,
+    song: data.song,
+    last_action: data.last_action,
+  });
+
+  renderCameraStatus(data);
+  renderDetectionSourceStatus(data);
+
+  text('robotConnected', 'Robot: ' + (data.robot_connected ? 'Connected' : 'Not connected'));
+  text('robotBusy', 'Busy: ' + (data.robot_busy ? 'Yes' : 'No'));
+
+  // Raw per-source values: shown exactly as detected, never harmonised.
+  text('faceEmotion', face.emotion || '-');
+  text('faceLocked', face.locked ? (face.emotion || '-') : 'not locked');
+  text('voiceRawMirror', voice.raw_emotion
+        ? voice.raw_emotion + ' ' + Math.round((voice.raw_confidence || 0) * 100) + '%' +
+          ' (streak ' + (voice.streak || 0) + '/' + (voice.streak_required || 3) + ')'
+        : '-');
+  text('voiceStableMirror', voice.emotion
+        ? voice.emotion + (voice.kind === 'upload' ? ' (from uploaded file)'
+                           : voice.active ? '' : ' (mic stopped)')
+        : '-');
+  text('manualEmotion', manual.emotion || '-');
+  text('voiceFaceMirror', face.emotion
+        ? face.emotion.toUpperCase() + (face.locked ? ' (locked)' : '') : '-');
+  text('voiceManualMirror', manual.emotion ? manual.emotion.toUpperCase() : '-');
+
+  renderUploadAnalysis(data.upload_analysis || {});
+  text('currentVideoSource', (data.video_source || {}).filename || '-');
+}
+
+let statusBusy = false;
+let statusSeq = 0;
+let statusRendered = 0;
+
+async function pollStatus() {
+  if (statusBusy) return;                // no overlapping /status requests
+  statusBusy = true;
+  const seq = ++statusSeq;
+  try {
+    const data = await getJSON('/status');
+    noteNetworkOk();
+    if (seq <= statusRendered) {         // a newer response already rendered
+      console.log('[UI] dropped out-of-order /status response', seq);
+      return;
+    }
+    statusRendered = seq;
+    renderStatus(data);
+  } catch (e) {
+    noteNetworkError('/status', e);
+  } finally {
+    statusBusy = false;
+  }
+}
+
+// ============================================================================
+// DETECTION CONTROL
+// ============================================================================
+async function resetDetection() {
+  try {
+    showRobotOutput(await getJSON('/reset'));
+    AudioBus.stop('music');
+    musicPlayer.removeAttribute('src');
+    pollStatus();
+  } catch (e) { noteNetworkError('/reset', e); }
+}
+async function stopDetection() {
+  try { showRobotOutput(await getJSON('/stop_detect')); pollStatus(); }
+  catch (e) { noteNetworkError('/stop_detect', e); }
+}
+async function resumeDetection() {
+  try { showRobotOutput(await getJSON('/resume_detect')); pollStatus(); }
+  catch (e) { noteNetworkError('/resume_detect', e); }
+}
+async function setEmotion(emotion) {
+  try {
+    const data = await getJSON('/set_emotion/' + encodeURIComponent(emotion));
+    showRobotOutput(data);
+    pollStatus();
+  } catch (e) { noteNetworkError('/set_emotion', e); }
+}
+async function clearManual() {
+  try { showRobotOutput(await getJSON('/clear_manual')); pollStatus(); }
+  catch (e) { noteNetworkError('/clear_manual', e); }
+}
+
+// ============================================================================
+// ROBOT
+// ============================================================================
+async function scanRobot() {
+  try {
+    const data = await getJSON('/robot/scan');
+    showRobotOutput(data);
+    const select = document.getElementById('robotDevice');
+    select.innerHTML = '';
+    (data.devices || []).forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = d.address;
+      opt.textContent = `${d.name} | ${d.address} | RSSI:${d.rssi}`;
+      select.appendChild(opt);
+    });
+  } catch (e) { noteNetworkError('/robot/scan', e); }
+}
+async function connectRobot() {
+  const address = document.getElementById('robotDevice').value;
+  const writeIndex = parseInt(document.getElementById('writeIndex').value || '0');
+  try {
+    showRobotOutput(await getJSON('/robot/connect', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({address: address, write_index: writeIndex})
+    }));
+  } catch (e) { noteNetworkError('/robot/connect', e); }
+}
+async function disconnectRobot() {
+  try { showRobotOutput(await getJSON('/robot/disconnect')); }
+  catch (e) { noteNetworkError('/robot/disconnect', e); }
+}
+async function robotHome() {
+  try { showRobotOutput(await getJSON('/robot/home')); }
+  catch (e) { noteNetworkError('/robot/home', e); }
+}
+async function robotStop() {
+  try { showRobotOutput(await getJSON('/robot/stop')); }
+  catch (e) { noteNetworkError('/robot/stop', e); }
+}
+async function runRobot(emotion) {
+  try { showRobotOutput(await getJSON('/robot/run/' + encodeURIComponent(emotion))); }
+  catch (e) { noteNetworkError('/robot/run', e); }
+}
+
+// ============================================================================
+// UPLOADS  (one definition of each function - loadVideoList used to exist twice)
+// ============================================================================
+const VIDEO_EXTS = ['mp4', 'webm', 'mov', 'mkv', 'avi'];
+let uploadedKinds = {};          // filename -> "video" | "audio"
+
+function extensionOf(name) {
+  const i = name.lastIndexOf('.');
+  return i < 0 ? '' : name.slice(i + 1).toLowerCase();
+}
+
+function kindOf(filename) {
+  return uploadedKinds[filename]
+      || (VIDEO_EXTS.includes(extensionOf(filename)) ? 'video' : 'audio');
+}
+
+async function loadVideoList() {
+  const select = document.getElementById('videoSelect');
+  const previous = select.value;
+  try {
+    const data = await getJSON('/video/list');
+    uploadedKinds = {};
+    (data.items || []).forEach(it => { uploadedKinds[it.filename] = it.kind; });
+    select.innerHTML = '';
+    (data.files || []).forEach(f => {
+      const opt = document.createElement('option');
+      opt.value = f;
+      opt.textContent = f + '  [' + kindOf(f) + ']';
+      select.appendChild(opt);
+    });
+    if ([...select.options].some(o => o.value === previous)) select.value = previous;
+  } catch (e) { noteNetworkError('/video/list', e); }
+}
+
+// Exactly one preview element ever holds a src, so the file can never be
+// decoded (or heard) twice. Both are registered with the AudioBus, so MUTE
+// reaches whichever one is in use.
+function showPreview(filename) {
+  const kind = kindOf(filename);
+  const url = '/uploads/' + encodeURIComponent(filename);
+  hidePreview();
+  const el = (kind === 'video') ? testVideoPreview : testAudioPreview;
+  el.setAttribute('src', url);
+  el.style.display = 'block';
+  el.load();
+  document.getElementById('previewHint').style.display = 'block';
+  text('selectedVideoFile', filename + ' (' + kind + ')');
+}
+
+function hidePreview() {
+  [testVideoPreview, testAudioPreview].forEach(el => {
+    el.pause();
+    el.removeAttribute('src');
+    el.load();                 // releases the decoder + any buffered audio
+    el.style.display = 'none';
+  });
+  AudioBus.stop('preview');
+  AudioBus.stop('preview-audio');
+  document.getElementById('previewHint').style.display = 'none';
+  text('selectedVideoFile', '-');
+}
+
+// Shared renderer for both per-member panels. This is a DEBUG view: it shows
+// each model's own unsmoothed vote for the last window, which is the only way
+// to tell "the ensemble is uncertain" apart from "one member is dragging it".
+function renderMemberRows(container, members, top, winner, dissenting) {
+  const rows = Object.keys(members || {}).sort().map(name => {
+    const probs = members[name] || {};
+    const best = top[name] || Object.keys(probs).sort((a, b) => probs[b] - probs[a])[0];
+    const pct = Math.round((probs[best] || 0) * 100);
+    const all = VOICE_EMOTIONS.map(e => `${e.slice(0, 3)} ${Math.round((probs[e] || 0) * 100)
+      .toString().padStart(2)}`).join('  ');
+    const disagrees = (dissenting || []).indexOf(name) !== -1;
+    const mark = disagrees ? ' <span style="color:#b42318;">&#9888; disagrees</span>' : '';
+    return `<div><b>${name}</b>: ${String(best || '-').toUpperCase()} ${pct}%` +
+           `<span style="opacity:.6;">  [${all}]</span>${mark}</div>`;
+  });
+  container.innerHTML = rows.join('') ||
+    '<div style="opacity:.6;">no window has been classified yet</div>';
+}
+
+function renderEnsemble(s) {
+  const box = document.getElementById('voiceEnsembleBox');
+  if (!box) return;
+  const info = s.ensemble || {};
+  const members = s.member_probabilities || {};
+  // A single model reports itself as one member; there is nothing to compare,
+  // so the whole box stays hidden and the panel is unchanged from before.
+  if (!info.members || info.members.length < 2) { box.style.display = 'none'; return; }
+  box.style.display = '';
+  const agree = (s.member_agreement === null || s.member_agreement === undefined)
+    ? '-' : Math.round(s.member_agreement * 100) + '% of models agree';
+  text('voiceEnsembleSummary', `${info.members.length} models, ${info.combiner} - ${agree}`);
+  renderMemberRows(document.getElementById('voiceEnsembleMembers'), members,
+                   s.member_top || {}, s.emotion, s.member_dissenting || []);
+}
+
+function renderUploadAnalysis(u) {
+  const statusEl = document.getElementById('uploadAnalysisStatus');
+  const resultEl = document.getElementById('uploadAnalysisResult');
+  const errorEl = document.getElementById('uploadAnalysisError');
+
+  if (!u.filename) {
+    statusEl.textContent = 'idle';
+    resultEl.textContent = '-';
+    errorEl.textContent = '';
+    return;
+  }
+  statusEl.textContent = `${String(u.status || '?').toUpperCase()} (${u.filename})`;
+
+  if (u.status === 'complete' && u.emotion) {
+    resultEl.textContent = `${u.emotion.toUpperCase()} (${Math.round((u.confidence || 0) * 100)}%, ` +
+      `${u.windows_analyzed} of ${u.windows_total} window${u.windows_total === 1 ? '' : 's'} ` +
+      `contained speech)`;
+  } else if (u.status === 'processing') {
+    resultEl.textContent = 'analysing audio track...';
+  } else {
+    resultEl.textContent = '-';
+  }
+  // "no_speech" is a real, expected outcome - not an error, and never a guess.
+  errorEl.textContent = (u.status === 'error') ? (u.error || 'analysis failed')
+                      : (u.status === 'no_speech') ? (u.message || 'no speech found') : '';
+
+  const box = document.getElementById('uploadEnsembleBox');
+  const members = u.member_probabilities || {};
+  if (!box) return;
+  if (Object.keys(members).length < 2) { box.style.display = 'none'; return; }
+  box.style.display = '';
+  const votes = u.member_votes || {};
+  renderMemberRows(document.getElementById('uploadEnsembleMembers'), members,
+                   {}, u.emotion, u.member_dissenting || []);
+  const detail = Object.keys(votes).sort().map(name =>
+    `<div style="opacity:.6;">${name} window votes: ` +
+    Object.keys(votes[name]).sort().map(e => `${e} &times;${votes[name][e]}`).join(', ') +
+    '</div>').join('');
+  document.getElementById('uploadEnsembleMembers').innerHTML += detail;
+}
+
+async function uploadVideo() {
+  const input = document.getElementById('videoFile');
+  const btn = document.getElementById('btnUpload');
+  text('uploadError', '');
+  if (!input.files || input.files.length === 0) {
+    text('uploadError', 'Choose an audio or video file first.');
+    return;
+  }
+  const file = input.files[0];
+  if (file.size === 0) {
+    text('uploadError', 'That file is empty (0 bytes).');
+    return;
+  }
+  const formData = new FormData();
+  formData.append('video', file);
+  btn.disabled = true;
+  btn.textContent = 'Uploading...';
+  try {
+    const data = await getJSON('/video/upload', { method: 'POST', body: formData });
+    showRobotOutput(data);
+    if (!data.ok) {
+      text('uploadError', data.error || 'Upload failed.');
+      return;
+    }
+    if (data.kind) uploadedKinds[data.filename] = data.kind;
+    input.value = '';
+    await loadVideoList();
+    document.getElementById('videoSelect').value = data.filename;
+    showPreview(data.filename);
+  } catch (e) {
+    text('uploadError', 'Upload failed: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Upload';
+  }
+}
+
+async function useSelectedVideo() {
+  const filename = document.getElementById('videoSelect').value;
+  text('uploadError', '');
+  if (!filename) {
+    text('uploadError', 'Upload or select a file first.');
+    return;
+  }
+  try {
+    const data = await getJSON('/video/use/' + encodeURIComponent(filename));
+    showRobotOutput(data);
+    if (!data.ok) {
+      text('uploadError', data.error || 'Could not use that file.');
+      return;
+    }
+    showPreview(filename);
+    pollStatus();
+  } catch (e) {
+    text('uploadError', 'Could not use that file: ' + e.message);
+  }
+}
+
+async function useWebcam() {
+  try {
+    showRobotOutput(await getJSON('/video/use_webcam'));
+    hidePreview();               // releases the clip's decoder and its audio
+    pollStatus();
+  } catch (e) { noteNetworkError('/video/use_webcam', e); }
+}
+
+// ============================================================================
+// LIVE VOICE EMOTION (tone of voice, analysed in Python - no speech-to-text)
+// ============================================================================
+const VOICE_EMOTIONS = ['happy', 'angry', 'sad', 'neutral'];
+const VOICE_MIC_TEXT = {
+  stopped: 'Stopped',
+  starting: 'Starting...',
+  loading_model: 'Running (loading emotion model...)',
+  listening: 'Running',
+  error: 'Error'
+};
+
+function setVoiceButtons(running) {
+  document.getElementById('btnStartVoice').style.display = running ? 'none' : 'inline-block';
+  document.getElementById('btnStopVoice').style.display = running ? 'inline-block' : 'none';
+}
+
+async function loadVoiceDevices() {
+  const select = document.getElementById('voiceDevice');
+  const previous = select.value;
+  try {
+    const data = await getJSON('/voice/devices');
+    select.innerHTML = '<option value="">System default</option>';
+    (data.devices || []).forEach(d => {
+      const opt = document.createElement('option');
+      opt.value = String(d.index);
+      opt.textContent = `[${d.index}] ${d.name} (${d.hostapi})${d.is_default ? ' - default' : ''}`;
+      select.appendChild(opt);
+    });
+    const wanted = (data.selected !== null && data.selected !== undefined) ? String(data.selected) : previous;
+    if ([...select.options].some(o => o.value === wanted)) select.value = wanted;
+    if (!data.ok) text('voiceError', data.error);
+  } catch (e) { noteNetworkError('/voice/devices', e); }
+}
+
+async function startVoice() {
+  text('voiceError', '');
+  text('voiceMic', 'Starting...');
+  try {
+    const data = await getJSON('/voice/start', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({device: document.getElementById('voiceDevice').value})
+    });
+    showRobotOutput(data);
+    if (!data.ok) text('voiceError', data.error || data.message || 'Could not start the microphone.');
+  } catch (e) {
+    text('voiceError', 'Could not reach the server: ' + e.message);
+  }
+  pollVoiceStatus();
+}
+
+async function stopVoice() {
+  try {
+    showRobotOutput(await getJSON('/voice/stop', {method: 'POST'}));
+  } catch (e) {
+    text('voiceError', 'Could not reach the server: ' + e.message);
+  }
+  pollVoiceStatus();
+}
+
+function renderVoiceStatus(s) {
+  // Voice-panel-only fields. The FUSED emotion is NOT rendered from here -
+  // it goes through the shared store below, so this panel and the camera
+  // panel are physically incapable of showing different final emotions.
+  const probs = s.probabilities || {};
+  VOICE_EMOTIONS.forEach(e => {
+    const pct = Math.round((probs[e] || 0) * 100);
+    const bar = document.getElementById('bar-' + e);
+    if (bar) bar.style.width = pct + '%';
+    text('pct-' + e, pct + '%');
+  });
+  document.getElementById('voiceBars').classList.toggle('idle', !(s.running && s.speech_detected));
+
+  text('voiceEmotion', 'Detected Emotion (raw): ' + (s.emotion ? s.emotion.toUpperCase() : '-'));
+  text('voiceConfidence', s.emotion ? Math.round(s.confidence * 100) + '%' : '-');
+  text('voiceStable', s.voice_stable_emotion ? s.voice_stable_emotion.toUpperCase() : '-');
+  text('voiceStreak',
+       `${(s.stability_count || 0).toFixed(1)}s/${(s.stability_required || 2).toFixed(1)}s`);
+
+  // Liveness. The old UI could sit on one prediction indefinitely with nothing
+  // on screen saying so; this makes a stalled pipeline visible at a glance
+  // rather than something you have to infer from numbers that stopped moving.
+  text('voicePredictions', s.inference_count || 0);
+  if (s.prediction_timestamp && s.server_time) {
+    const age = Math.max(0, s.server_time - s.prediction_timestamp);
+    text('voicePredictionAge',
+         age < 1 ? 'just now' : `${age.toFixed(age < 10 ? 1 : 0)}s ago`);
+  } else {
+    text('voicePredictionAge', s.running ? 'waiting for speech' : '-');
+  }
+  text('voiceBuffered',
+       s.running ? `${(s.buffered_speech_seconds || 0).toFixed(1)}s speech / ` +
+                   `${(s.buffered_seconds || 0).toFixed(1)}s audio` : '-');
+  text('voiceSpeech', s.speech_detected ? 'Yes' : 'No');
+
+  let mic = VOICE_MIC_TEXT[s.status] || s.status;
+  if (!s.running && s.model_loading) mic += ' (emotion model loading...)';
+  if (s.running && s.input_device) mic += ' - ' + s.input_device;
+  text('voiceMic', mic);
+
+  text('voiceRobotMode', s.robot_trigger_enabled ? 'ENABLED (robot will move)' : 'Simulation only');
+  text('voiceWarning', s.warning || '');
+  renderEnsemble(s);
+  text('voiceError', s.error || '');
+  setVoiceButtons(s.running);
+
+  // The fused emotion carried by this response goes through the SAME store,
+  // sequence-checked, so whichever of the two endpoints answers last wins only
+  // if its snapshot is genuinely newer.
+  applyEmotionState({
+    state_seq: s.state_seq,
+    emotion: s.final_emotion,
+    source: s.final_source,
+    confidence: s.final_confidence,
+    last_action: s.last_robot_action,
+  });
+}
+
+let voiceBusy = false;
+let voiceSeq = 0;
+let voiceRendered = 0;
+
+async function pollVoiceStatus() {
+  if (voiceBusy) return;
+  voiceBusy = true;
+  const seq = ++voiceSeq;
+  try {
+    const data = await getJSON('/voice/status');
+    noteNetworkOk();
+    if (seq <= voiceRendered) {
+      console.log('[UI] dropped out-of-order /voice/status response', seq);
+      return;
+    }
+    voiceRendered = seq;
+    renderVoiceStatus(data);
+  } catch (e) {
+    noteNetworkError('/voice/status', e);
+  } finally {
+    voiceBusy = false;
+  }
+}
+
+// ============================================================================
+// ONE scheduler. /voice/status no longer chains an extra pollStatus() call on
+// every tick - that made three concurrent /status requests per second with no
+// in-flight guard, which is what let responses interleave in the first place.
+// ============================================================================
+let pollTimer = null;
+let voiceTimer = null;
+
+function startPolling() {
+  stopPolling();
+  pollTimer = setInterval(pollStatus, 1000);
+  voiceTimer = setInterval(pollVoiceStatus, 500);
+  CameraFeed.start(100);
+}
+
+function stopPolling() {
+  if (pollTimer) { clearInterval(pollTimer); pollTimer = null; }
+  if (voiceTimer) { clearInterval(voiceTimer); voiceTimer = null; }
+  CameraFeed.stop();
+}
+
+// Stop polling while the tab is hidden: a backgrounded tab kept queueing
+// requests that all landed at once on return, which is exactly the burst that
+// produced out-of-order renders. Also stops the camera-frame poll, so a
+// hidden tab is not still spending CPU decoding a preview nobody can see.
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) {
+    stopPolling();
+  } else {
+    startPolling();
+    pollStatus();
+    pollVoiceStatus();
+  }
+});
+
+window.addEventListener('beforeunload', () => {
+  stopPolling();
+  hidePreview();
+});
+
+AudioBus.render();
+startPolling();
+pollStatus();
+pollVoiceStatus();
+loadVoiceDevices();
+loadVideoList();
+</script>
+</body>
+</html>
