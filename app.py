@@ -182,9 +182,9 @@ background_colors = {
 # Emotion comes from the tone of voice only (emotion_detector.py).
 # No speech-to-text is used, so the words spoken do not matter.
 # ============================================================
-# Keep False while testing: stable voice emotions are only logged as
-# "[ROBOT SIMULATION] Would trigger ...". Set True to run the real robot action.
-VOICE_ROBOT_TRIGGER_ENABLED = False
+# Keep False while testing: physical movement is blocked. Set True by operator 
+# (via UI / API) to enable real robot action.
+HARDWARE_ENABLED = False
 
 # Microphone: None = system default, or an index / name substring listed by
 # GET /voice/devices. Can also be chosen in the web page, or set with the
@@ -403,10 +403,16 @@ class XArmBLE:
         params.append(time_high)
 
         for servo_id, position in servo_positions.items():
-            position = max(0, min(1000, int(position)))
-            params.append(int(servo_id))
-            params.append(position & 0xFF)
-            params.append((position >> 8) & 0xFF)
+            sid = int(servo_id)
+            if sid < 1 or sid > 6:
+                raise ValueError(f"Invalid servo ID {sid}. Must be 1-6.")
+            pos = int(position)
+            if pos < 0 or pos > 1000:
+                raise ValueError(f"Invalid position {pos} for servo {sid}. Must be 0-1000.")
+            
+            params.append(sid)
+            params.append(pos & 0xFF)
+            params.append((pos >> 8) & 0xFF)
 
         await self.send_packet(self.SERVO_MOVE_TIME_WRITE, params)
 
@@ -614,6 +620,10 @@ def execute_robot_pick_for_emotion(emotion):
         print("Robot is not connected. Emotion action skipped.")
         return
 
+    if not HARDWARE_ENABLED:
+        print(f"[DRY-RUN] Would execute robot pick for emotion: {emotion}")
+        return
+
     robot.busy = True
     robot.last_emotion_executed = emotion
     robot.last_action_time = now
@@ -786,11 +796,10 @@ def _on_final_emotion_changed(snapshot):
         print(f"[ROBOT] emotion={emotion} action=none (emotion not mapped to a taught pose)")
         return
 
-    # Voice-driven actions stay simulated until VOICE_ROBOT_TRIGGER_ENABLED is True,
-    # exactly as before. Face/manual keep triggering the real sequence.
-    if source == "voice" and not VOICE_ROBOT_TRIGGER_ENABLED:
+    # Face, voice, and manual trigger the physical sequence only if HARDWARE_ENABLED.
+    if not HARDWARE_ENABLED:
         action = f"simulated {emotion}"
-        print(f"[ROBOT SIMULATION] Would trigger {emotion}")
+        print(f"[DRY RUN / ROBOT SIMULATION] Would trigger {emotion} from {source}")
     else:
         if not robot.connected:
             note = " (robot not connected - action will be skipped)"
@@ -1297,7 +1306,8 @@ def robot_status():
         "handle": robot.write_handle,
         "last_device": robot.last_device,
         "last_write_index": robot.last_write_index,
-        "last_emotion_executed": robot.last_emotion_executed
+        "last_emotion_executed": robot.last_emotion_executed,
+        "hardware_enabled": HARDWARE_ENABLED
     })
 
 
@@ -1308,9 +1318,12 @@ def robot_move():
     move_time = int(data.get("move_time", MOVE_NORMAL))
 
     try:
+        if not HARDWARE_ENABLED:
+            return jsonify({"ok": True, "message": "[DRY RUN] move command sent (simulated)"})
+
         future = robot_loop.run_async(robot.move_servos(pose_to_int_dict(positions), move_time))
         future.result(timeout=10)
-        return jsonify({"ok": True, "message": "move command sent"})
+        return jsonify({"ok": True, "message": "move command sent; completion unverified"})
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)})
 
@@ -1318,8 +1331,11 @@ def robot_move():
 @app.route("/robot/home")
 def robot_home():
     try:
+        if not HARDWARE_ENABLED:
+            return jsonify({"ok": True, "message": "[DRY RUN] home/front safe sent (simulated)"})
+        
         send_robot_pose_sync(robot_poses["front_safe"], MOVE_SLOW)
-        return jsonify({"ok": True, "message": "home/front safe sent"})
+        return jsonify({"ok": True, "message": "home/front safe sent; completion unverified"})
     except Exception as e:
         return jsonify({"ok": False, "error": str(e)})
 
@@ -1339,6 +1355,10 @@ def robot_run_emotion(emotion):
     emotion = emotion.lower().strip()
     if emotion not in EMOTION_TO_POSE:
         return jsonify({"ok": False, "error": f"emotion '{emotion}' not mapped"})
+    
+    if not HARDWARE_ENABLED:
+        return jsonify({"ok": True, "message": f"[DRY RUN] robot pick started for {emotion}"})
+    
     trigger_robot_for_emotion(emotion)
     return jsonify({"ok": True, "message": f"robot pick started for {emotion}"})
 
@@ -1367,6 +1387,15 @@ def robot_save_pose():
 
     return jsonify({"ok": True, "message": f"pose saved for {pose_key}", "pose": clean_pose})
 
+
+@app.route("/robot/hardware_enable", methods=["POST"])
+def robot_hardware_enable():
+    global HARDWARE_ENABLED
+    data = request.get_json(silent=True) or {}
+    enable = data.get("enable", False)
+    HARDWARE_ENABLED = bool(enable)
+    print(f"[ROBOT] Hardware Enabled set to {HARDWARE_ENABLED}")
+    return jsonify({"ok": True, "hardware_enabled": HARDWARE_ENABLED})
 
 # ============================================================
 # LIVE VOICE EMOTION (tone of voice, emotion_detector.py)
@@ -1571,7 +1600,7 @@ def voice_status():
     status["voice_stable_emotion"] = snap["voice"]["emotion"]
     status["voice_stable_confidence"] = round(float(snap["voice"]["confidence"]), 4)
     status["manual_emotion"] = snap["manual"]["emotion"]
-    status["robot_trigger_enabled"] = VOICE_ROBOT_TRIGGER_ENABLED
+    status["hardware_enabled"] = HARDWARE_ENABLED
     status["robot_connected"] = robot.connected
     status["robot_busy"] = robot.busy
     status.update(_final_output_fields(snap))

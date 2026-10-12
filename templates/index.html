@@ -1256,7 +1256,7 @@ function renderVoiceStatus(s) {
   if (s.running && s.input_device) mic += ' - ' + s.input_device;
   text('voiceMic', mic);
 
-  text('voiceRobotMode', s.robot_trigger_enabled ? 'ENABLED (robot will move)' : 'Simulation only');
+  text('voiceRobotMode', s.hardware_enabled ? 'ENABLED (robot will move)' : 'Simulation only');
   text('voiceWarning', s.warning || '');
   renderEnsemble(s);
   text('voiceError', s.error || '');

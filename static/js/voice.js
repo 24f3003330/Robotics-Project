@@ -282,7 +282,7 @@ function renderVoiceStatus(s) {
   text('voiceModelState', s.model_loading ? 'Loading emotion model (first time can take a while)...'
                           : s.model_loaded ? 'Emotion model ready' : '');
 
-  text('voiceRobotMode', s.robot_trigger_enabled ? 'ENABLED (robot will move)' : 'Simulation only');
+  text('voiceRobotMode', s.hardware_enabled ? 'ENABLED (robot will move)' : 'Simulation only');
   text('voiceWarning', s.warning || '');
   show('voiceWarning', !!s.warning && !s.mic_silent);
   if (running) startError = null;
